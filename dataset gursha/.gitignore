@@ -1,0 +1,126 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+ENV/
+env/
+.venv
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Data and Models
+*.pt
+*.pth
+model.pt
+best_model.pt
+checkpoints/
+*.model
+*.pkl
+*.pickle
+
+# Dataset
+dataset/
+data/
+cache/
+*.parquet
+
+# Logs
+logs/
+*.log
+training_logs/
+
+# Outputs
+output/
+results/
+predictions/
+*.csv
+*.json
+training_history.json
+class_names.json
+
+# Plots and Visualizations
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.pdf
+training_curves.png
+confusion_matrix.png
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Environment
+.env.local
+.env.*.local
+secrets/
+
+# OS
+Thumbs.db
+.directory
+.AppleDouble
+.LSOverride
+
+# Node (if using npm for frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Temp files
+*.tmp
+tmp/
+temp/
+*.bak
+*.backup
+
+# CUDA/GPU
+*.o
+*.a
+*.so

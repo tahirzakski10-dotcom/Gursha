@@ -1,0 +1,123 @@
+version: '3.8'
+
+# Docker Compose configuration for Gursha AI Platform
+# ==================================================
+#
+# Usage:
+#   docker-compose up              # Start services
+#   docker-compose down            # Stop services
+#   docker-compose up -d           # Start in background
+#   docker-compose logs -f api     # View logs
+#
+# Prerequisites:
+#   - Docker 20.10+
+#   - Docker Compose 2.0+
+#   - GPU support (optional): nvidia-docker
+
+services:
+  # Main API Service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
+    ports:
+      - "8000:8000"
+    
+    container_name: gursha-api
+    
+    environment:
+      # Python
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      
+      # Model paths
+      - MODEL_PATH=./model.pt
+      - CLASS_NAMES_PATH=./class_names.json
+      
+      # Server
+      - HOST=0.0.0.0
+      - PORT=8000
+    
+    volumes:
+      # Mount model files
+      - ./model.pt:/app/model.pt:ro
+      - ./class_names.json:/app/class_names.json:ro
+      
+      # Mount logs
+      - ./logs:/app/logs
+      
+      # Mount checkpoints for training
+      - ./checkpoints:/app/checkpoints
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '1'
+          memory: 2G
+          # GPU support (if available)
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Optional: Nginx Reverse Proxy (for production)
+  nginx:
+    image: nginx:alpine
+    
+    container_name: gursha-nginx
+    
+    ports:
+      - "80:80"
+      - "443:443"
+    
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    
+    depends_on:
+      - api
+    
+    restart: unless-stopped
+    
+    networks:
+      - gursha-network
+
+networks:
+  gursha-network:
+    driver: bridge
+
+# Docker Compose v3.8 Features Used:
+# - Multi-stage builds
+# - GPU support
+# - Health checks
+# - Resource limits
+# - Logging configuration
+#
+# Optional additions:
+# - Database service (PostgreSQL for logs)
+# - Cache service (Redis)
+# - Monitoring (Prometheus, Grafana)
+# - Message queue (RabbitMQ for async tasks)

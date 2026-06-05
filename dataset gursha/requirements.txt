@@ -1,0 +1,15 @@
+torch
+torchvision
+timm
+datasets
+pillow
+numpy
+pandas
+scikit-learn
+matplotlib
+seaborn
+tqdm
+pyyaml
+fastapi
+uvicorn
+python-multipart
