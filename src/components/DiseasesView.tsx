@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, Video, Activity, HeartPulse, Droplet, ArrowRight, CheckCircle2, AlertTriangle } from "lucide-react";
+import { BookOpen, Video, Activity, HeartPulse, Droplet, ArrowRight, CheckCircle2, AlertTriangle, ExternalLink } from "lucide-react";
 
 const diseases = [
   {
@@ -19,9 +19,12 @@ const diseases = [
     research: {
       title: "Glycemic Index of Teff vs. Wheat in Ethiopian Diets",
       finding: "Pure Teff Injera has a significantly lower glycemic index compared to wheat-mixed Injera, making it highly suitable for diabetic patients.",
-      importance: "Switching to pure Teff can naturally help stabilize daily blood sugar."
+      importance: "Switching to pure Teff can naturally help stabilize daily blood sugar.",
+      link: "https://pubmed.ncbi.nlm.nih.gov/25227786/"
     },
-    video: "https://www.youtube.com/embed/wZAjVQWbMlE",
+    simulation: "/embed/diabetes_simulation.html",
+    simulationLabel: "Launch Blood Sugar Simulator",
+    video: "https://www.youtube.com/embed/53TJIHv-C3A",
     videoDesc: "Understanding Type 2 Diabetes and Nutrition"
   },
   {
@@ -38,9 +41,12 @@ const diseases = [
     research: {
       title: "Iron Bioavailability in Traditional Ethiopian Fermented Foods",
       finding: "The fermentation process of Injera increases the bioavailability of iron and zinc by reducing phytic acid.",
-      importance: "Traditional preparation methods actually make the nutrients in Teff easier for your body to absorb."
+      importance: "Traditional preparation methods actually make the nutrients in Teff easier for your body to absorb.",
+      link: "https://pubmed.ncbi.nlm.nih.gov/20888323/"
     },
-    video: "https://www.youtube.com/embed/5a-N2A3bH4c",
+    simulation: "/embed/anemia_interactive_simulation.html",
+    simulationLabel: "Launch Iron Absorption Simulator",
+    video: "https://www.youtube.com/embed/7LIeKpo0H_Y",
     videoDesc: "How to prevent Iron Deficiency Anemia"
   },
   {
@@ -57,9 +63,12 @@ const diseases = [
     research: {
       title: "Sodium Content in Commercial vs. Homemade Berbere",
       finding: "Commercial Berbere blends often contain up to 40% more sodium than traditional homemade blends.",
-      importance: "Making or buying low-sodium spice blends is crucial for managing blood pressure."
+      importance: "Making or buying low-sodium spice blends is crucial for managing blood pressure.",
+      link: "https://pubmed.ncbi.nlm.nih.gov/26404364/"
     },
-    video: "https://www.youtube.com/embed/YyRMigzTfA8",
+    simulation: "/embed/hypertension_body_simulation.html",
+    simulationLabel: "Launch Blood Pressure Simulator",
+    video: "https://www.youtube.com/embed/Ct4AxBjSj8w",
     videoDesc: "Dietary Approaches to Stop Hypertension (DASH Diet)"
   }
 ];
@@ -146,48 +155,23 @@ export default function DiseasesView() {
               </div>
             </div>
 
-            {/* Interactive Simulation Placeholder */}
+            {/* Interactive Simulation */}
             <div className="glass p-6 md:p-8 rounded-2xl relative overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-primary)]/10 to-transparent z-0 pointer-events-none" />
               <div className="relative z-10">
                 <h3 className="text-xl font-bold mb-2">Interactive Simulation</h3>
-                <p className="text-neutral-400 text-sm mb-6">Visualizing {activeData.name} triggers.</p>
+                <p className="text-neutral-400 text-sm mb-6">Visualize how {activeData.name.toLowerCase()} affects the body in real-time.</p>
                 
-                {/* Mock Simulation UI */}
-                <div className="bg-[var(--color-neutral-dark)] rounded-xl p-6 border border-[var(--color-card-border)]">
-                  {activeData.id === 'diabetes' && (
-                     <div className="space-y-4">
-                       <p className="font-medium text-sm">Blood Sugar Impact Simulator</p>
-                       <div className="flex gap-2">
-                         <button className="flex-1 bg-[var(--color-card)] py-2 rounded-lg text-xs hover:bg-[var(--color-primary)]/50 transition">White Bread</button>
-                         <button className="flex-1 bg-[var(--color-primary)] py-2 rounded-lg text-xs shadow-glow">Pure Teff Injera</button>
-                       </div>
-                       <div className="h-32 bg-background rounded-lg p-2 flex items-end gap-1 relative">
-                          <div className="absolute inset-0 flex items-center justify-center text-xs text-neutral-500">Stable Glycemic Curve</div>
-                          <div className="w-full h-8 bg-green-500/50 rounded-t-sm" />
-                       </div>
-                     </div>
-                  )}
-                  {activeData.id === 'anemia' && (
-                     <div className="space-y-4 text-center">
-                       <p className="font-medium text-sm">Iron Absorption Builder</p>
-                       <div className="flex items-center justify-center gap-4 text-3xl my-4">
-                         <span>🥩</span> <span className="text-neutral-500">+</span> <span>🍋</span> <span className="text-neutral-500">=</span> <span className="text-[var(--color-primary)]">🩸 2x Iron</span>
-                       </div>
-                       <p className="text-xs text-neutral-400">Combining Vitamin C with non-heme or heme iron doubles absorption.</p>
-                     </div>
-                  )}
-                  {activeData.id === 'hypertension' && (
-                     <div className="space-y-4">
-                       <p className="font-medium text-sm">Salt Intake vs Blood Pressure</p>
-                       <input type="range" min="1" max="100" defaultValue="30" className="w-full accent-[var(--color-primary)]" />
-                       <div className="flex justify-between text-xs text-neutral-400">
-                         <span>Low Salt</span>
-                         <span>High Salt (Danger)</span>
-                       </div>
-                     </div>
-                  )}
-                </div>
+                <a
+                  href={activeData.simulation}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-3 w-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-hover)] hover:brightness-110 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-glow text-lg group/btn"
+                >
+                  <Activity size={22} className="group-hover/btn:animate-pulse" />
+                  {activeData.simulationLabel}
+                  <ExternalLink size={18} className="opacity-60" />
+                </a>
               </div>
             </div>
           </div>
@@ -205,7 +189,15 @@ export default function DiseasesView() {
                 <p className="text-xs text-neutral-300 mb-3 italic">"{activeData.research.finding}"</p>
                 <div className="pt-3 border-t border-neutral-700">
                   <span className="text-xs font-bold text-[var(--color-primary)] block mb-1">Why it matters:</span>
-                  <p className="text-xs text-neutral-400">{activeData.research.importance}</p>
+                  <p className="text-xs text-neutral-400 mb-3">{activeData.research.importance}</p>
+                  <a
+                    href={activeData.research.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full bg-[var(--color-neutral-dark)] hover:bg-[var(--color-primary)]/20 text-white text-xs font-bold py-2.5 px-4 rounded-lg transition-all border border-[var(--color-card-border)] hover:border-[var(--color-primary)]/50"
+                  >
+                    <BookOpen size={14} /> Read Full Paper
+                  </a>
                 </div>
               </div>
             </div>

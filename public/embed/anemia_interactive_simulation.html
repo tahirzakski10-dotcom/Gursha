@@ -1,0 +1,388 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans, sans-serif); }
+  #app { padding: 1rem 0; }
+  .nav { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .nav button { font-size: 13px; padding: 6px 14px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-secondary); cursor: pointer; transition: all .2s; }
+  .nav button.active { background: var(--color-background-primary); color: var(--color-text-primary); border-color: var(--color-border-primary); font-weight: 500; }
+  .nav button:hover { border-color: var(--color-border-primary); color: var(--color-text-primary); }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .section-title { font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.5rem; }
+  .section-sub { font-size: 14px; color: var(--color-text-secondary); margin-bottom: 1.2rem; line-height: 1.6; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
+  .card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; border: 0.5px solid var(--color-border-tertiary); cursor: pointer; transition: border-color .2s; }
+  .card:hover { border-color: var(--color-border-primary); }
+  .card.selected { border-color: #E24B4A; background: #FCEBEB; }
+  .card-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .card-value { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
+  .card-value.danger { color: #A32D2D; }
+  .card-value.ok { color: #3B6D11; }
+  .detail-box { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+  .detail-box h3 { font-size: 14px; font-weight: 500; margin-bottom: 8px; color: var(--color-text-primary); }
+  .detail-box p { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+  .slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
+  .slider-row label { font-size: 13px; color: var(--color-text-secondary); min-width: 130px; }
+  .slider-row input[type=range] { flex: 1; }
+  .slider-row span { font-size: 13px; font-weight: 500; min-width: 48px; text-align: right; color: var(--color-text-primary); }
+  .quiz-q { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 1rem; }
+  .quiz-opts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
+  .quiz-opt { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px 14px; font-size: 14px; color: var(--color-text-primary); cursor: pointer; transition: all .2s; text-align: left; }
+  .quiz-opt:hover { border-color: var(--color-border-primary); }
+  .quiz-opt.correct { background: #EAF3DE; border-color: #639922; color: #27500A; }
+  .quiz-opt.wrong { background: #FCEBEB; border-color: #A32D2D; color: #791F1F; }
+  .quiz-feedback { font-size: 13px; padding: 10px 14px; border-radius: var(--border-radius-md); margin-bottom: 1rem; line-height: 1.5; }
+  .quiz-feedback.correct { background: #EAF3DE; color: #27500A; }
+  .quiz-feedback.wrong { background: #FCEBEB; color: #791F1F; }
+  .quiz-progress { display: flex; gap: 6px; margin-bottom: 1.5rem; }
+  .q-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--color-border-secondary); }
+  .q-dot.done-correct { background: #639922; }
+  .q-dot.done-wrong { background: #A32D2D; }
+  .q-dot.current { background: var(--color-text-secondary); }
+  .score-box { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 2rem; text-align: center; }
+  .score-num { font-size: 48px; font-weight: 500; margin-bottom: 0.5rem; color: var(--color-text-primary); }
+  .score-label { font-size: 14px; color: var(--color-text-secondary); }
+  @keyframes pulse { 0%,100%{r:8;opacity:1} 50%{r:11;opacity:.7} }
+  @keyframes flow { to { stroke-dashoffset: -20; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .rbc { animation: pulse 1.8s ease-in-out infinite; }
+  .rbc-sick { animation: pulse 2.4s ease-in-out infinite; }
+  svg text { font-family: var(--font-sans, sans-serif); }
+</style>
+
+<div id="app">
+  <h2 class="sr-only">Interactive simulation explaining anemia — how it enters the body, its types, causes, symptoms, and a quiz.</h2>
+
+  <div class="nav">
+    <button class="active" onclick="showPanel('intro')">What is anemia?</button>
+    <button onclick="showPanel('types')">Types</button>
+    <button onclick="showPanel('cause')">How it enters</button>
+    <button onclick="showPanel('symptoms')">Symptoms</button>
+    <button onclick="showPanel('sim')">Simulation</button>
+    <button onclick="showPanel('quiz')">Quiz</button>
+  </div>
+
+  <!-- INTRO -->
+  <div id="panel-intro" class="panel active">
+    <p class="section-title">What is anemia?</p>
+    <p class="section-sub">Anemia is a condition where your blood doesn't have enough healthy red blood cells (RBCs) or hemoglobin to carry adequate oxygen to body tissues. Think of it as a delivery failure — your cells are starved of the oxygen they need to function.</p>
+    <svg width="100%" viewBox="0 0 680 200" role="img">
+      <title>Normal vs anemic blood comparison</title>
+      <desc>Two blood vessel cross-sections side by side. The normal vessel is full of red blood cells. The anemic vessel has fewer, paler cells.</desc>
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+      </defs>
+      <!-- Normal vessel -->
+      <rect x="40" y="30" width="260" height="140" rx="70" fill="#FAECE7" stroke="#D85A30" stroke-width="1.5"/>
+      <text x="170" y="20" text-anchor="middle" font-size="13" font-weight="500" fill="#993C1D">Normal blood</text>
+      <circle class="rbc" cx="100" cy="80" r="8" fill="#D85A30" opacity=".9"/>
+      <circle class="rbc" cx="130" cy="110" r="8" fill="#D85A30" opacity=".9" style="animation-delay:.3s"/>
+      <circle class="rbc" cx="160" cy="75" r="8" fill="#D85A30" opacity=".9" style="animation-delay:.6s"/>
+      <circle class="rbc" cx="195" cy="105" r="8" fill="#D85A30" opacity=".9" style="animation-delay:.9s"/>
+      <circle class="rbc" cx="220" cy="78" r="8" fill="#D85A30" opacity=".9" style="animation-delay:1.2s"/>
+      <circle class="rbc" cx="250" cy="112" r="8" fill="#D85A30" opacity=".9" style="animation-delay:.5s"/>
+      <circle class="rbc" cx="115" cy="140" r="8" fill="#D85A30" opacity=".9" style="animation-delay:.15s"/>
+      <circle class="rbc" cx="185" cy="140" r="8" fill="#D85A30" opacity=".9" style="animation-delay:.8s"/>
+      <text x="170" y="185" text-anchor="middle" font-size="12" fill="#993C1D">High RBC count + hemoglobin</text>
+      <!-- Anemic vessel -->
+      <rect x="380" y="30" width="260" height="140" rx="70" fill="#F1EFE8" stroke="#888780" stroke-width="1.5"/>
+      <text x="510" y="20" text-anchor="middle" font-size="13" font-weight="500" fill="#5F5E5A">Anemic blood</text>
+      <circle class="rbc-sick" cx="430" cy="80" r="7" fill="#D3D1C7" opacity=".8"/>
+      <circle class="rbc-sick" cx="495" cy="110" r="6" fill="#B4B2A9" opacity=".7" style="animation-delay:.5s"/>
+      <circle class="rbc-sick" cx="565" cy="85" r="7" fill="#D3D1C7" opacity=".8" style="animation-delay:1s"/>
+      <circle class="rbc-sick" cx="525" cy="148" r="5" fill="#B4B2A9" opacity=".6" style="animation-delay:.2s"/>
+      <text x="510" y="185" text-anchor="middle" font-size="12" fill="#5F5E5A">Low RBC count or hemoglobin</text>
+    </svg>
+    <div class="cards" style="margin-top:1rem">
+      <div class="card"><div class="card-label">Global prevalence</div><div class="card-value danger">~1.8B</div><div class="card-label" style="margin-top:4px">people affected</div></div>
+      <div class="card"><div class="card-label">Most affected</div><div class="card-value" style="font-size:15px;">Women &amp; children</div><div class="card-label" style="margin-top:4px">especially in LMICs</div></div>
+      <div class="card"><div class="card-label">Hemoglobin threshold</div><div class="card-value danger">&lt;12 g/dL</div><div class="card-label" style="margin-top:4px">women (WHO cutoff)</div></div>
+      <div class="card"><div class="card-label">Treatable?</div><div class="card-value ok">Yes</div><div class="card-label" style="margin-top:4px">most types respond to treatment</div></div>
+    </div>
+  </div>
+
+  <!-- TYPES -->
+  <div id="panel-types" class="panel">
+    <p class="section-title">Types of anemia</p>
+    <p class="section-sub">There are over 400 types of anemia. They are grouped by their underlying mechanism. Click a card to explore each type.</p>
+    <div id="type-cards" class="cards">
+      <div class="card" onclick="selectType('iron')"><div class="card-label">Most common</div><div class="card-value" style="font-size:15px;">Iron-deficiency</div></div>
+      <div class="card" onclick="selectType('b12')"><div class="card-label">Nutrient</div><div class="card-value" style="font-size:15px;">Megaloblastic (B12/folate)</div></div>
+      <div class="card" onclick="selectType('sickle')"><div class="card-label">Genetic</div><div class="card-value" style="font-size:15px;">Sickle cell</div></div>
+      <div class="card" onclick="selectType('aplastic')"><div class="card-label">Bone marrow</div><div class="card-value" style="font-size:15px;">Aplastic</div></div>
+      <div class="card" onclick="selectType('hemolytic')"><div class="card-label">Destruction</div><div class="card-value" style="font-size:15px;">Hemolytic</div></div>
+      <div class="card" onclick="selectType('chronic')"><div class="card-label">Secondary</div><div class="card-value" style="font-size:15px;">Anemia of chronic disease</div></div>
+    </div>
+    <div id="type-detail" class="detail-box" style="display:none">
+      <h3 id="type-title"></h3>
+      <p id="type-desc"></p>
+    </div>
+  </div>
+
+  <!-- CAUSE / HOW IT ENTERS -->
+  <div id="panel-cause" class="panel">
+    <p class="section-title">How anemia enters the body</p>
+    <p class="section-sub">Anemia develops through three main pathways. Trace the route from trigger to symptom below.</p>
+    <svg width="100%" viewBox="0 0 680 420" role="img">
+      <title>Three pathways of anemia development</title>
+      <desc>Flow diagram showing three causes: not enough RBC production, too much RBC destruction, and blood loss — all leading to anemia and then symptoms.</desc>
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+      </defs>
+      <!-- Pathway 1: Not enough production -->
+      <g class="node c-blue" onclick="sendPrompt('Tell me more about reduced RBC production as a cause of anemia')">
+        <rect x="40" y="30" width="180" height="56" rx="8" stroke-width="0.5"/>
+        <text class="th" x="130" y="52" text-anchor="middle" dominant-baseline="central">Reduced production</text>
+        <text class="ts" x="130" y="72" text-anchor="middle" dominant-baseline="central">Iron, B12, bone marrow issues</text>
+      </g>
+      <!-- Pathway 2: Too much destruction -->
+      <g class="node c-coral" onclick="sendPrompt('Tell me more about excessive RBC destruction causing anemia')">
+        <rect x="250" y="30" width="180" height="56" rx="8" stroke-width="0.5"/>
+        <text class="th" x="340" y="52" text-anchor="middle" dominant-baseline="central">Excess destruction</text>
+        <text class="ts" x="340" y="72" text-anchor="middle" dominant-baseline="central">Sickle cell, autoimmune</text>
+      </g>
+      <!-- Pathway 3: Blood loss -->
+      <g class="node c-red" onclick="sendPrompt('Tell me more about blood loss causing anemia')">
+        <rect x="460" y="30" width="180" height="56" rx="8" stroke-width="0.5"/>
+        <text class="th" x="550" y="52" text-anchor="middle" dominant-baseline="central">Blood loss</text>
+        <text class="ts" x="550" y="72" text-anchor="middle" dominant-baseline="central">Injury, menstruation, ulcers</text>
+      </g>
+      <!-- Arrows down to anemia box -->
+      <path d="M130 86 L130 160 L310 188" fill="none" stroke="#888780" stroke-width="1" marker-end="url(#arrow)"/>
+      <path d="M340 86 L340 188" fill="none" stroke="#888780" stroke-width="1" marker-end="url(#arrow)"/>
+      <path d="M550 86 L550 160 L370 188" fill="none" stroke="#888780" stroke-width="1" marker-end="url(#arrow)"/>
+      <!-- Central ANEMIA box -->
+      <g class="node c-gray" onclick="sendPrompt('What happens in the body during anemia?')">
+        <rect x="240" y="188" width="200" height="56" rx="8" stroke-width="1"/>
+        <text class="th" x="340" y="210" text-anchor="middle" dominant-baseline="central">Low hemoglobin / RBCs</text>
+        <text class="ts" x="340" y="228" text-anchor="middle" dominant-baseline="central">Anemia established</text>
+      </g>
+      <!-- Arrow down to oxygen -->
+      <line x1="340" y1="244" x2="340" y2="280" stroke="#888780" stroke-width="1" marker-end="url(#arrow)"/>
+      <!-- Oxygen delivery box -->
+      <g class="node c-amber" onclick="sendPrompt('How does anemia affect oxygen delivery?')">
+        <rect x="240" y="280" width="200" height="56" rx="8" stroke-width="0.5"/>
+        <text class="th" x="340" y="302" text-anchor="middle" dominant-baseline="central">Reduced O₂ delivery</text>
+        <text class="ts" x="340" y="320" text-anchor="middle" dominant-baseline="central">Tissues receive less oxygen</text>
+      </g>
+      <!-- Arrow down to symptoms -->
+      <line x1="340" y1="336" x2="340" y2="370" stroke="#888780" stroke-width="1" marker-end="url(#arrow)"/>
+      <!-- Symptoms box -->
+      <g class="node c-purple" onclick="sendPrompt('What are the main symptoms of anemia?')">
+        <rect x="190" y="370" width="300" height="40" rx="8" stroke-width="0.5"/>
+        <text class="th" x="340" y="390" text-anchor="middle" dominant-baseline="central">Fatigue · Pallor · Shortness of breath</text>
+      </g>
+    </svg>
+    <div class="detail-box" style="margin-top:1.5rem">
+      <h3>The role of hemoglobin</h3>
+      <p>Hemoglobin is the protein inside red blood cells that binds oxygen in the lungs and releases it to tissues. When hemoglobin levels fall — for any of the three reasons above — every organ in your body receives less oxygen, triggering the cascade of anemia symptoms.</p>
+    </div>
+  </div>
+
+  <!-- SYMPTOMS -->
+  <div id="panel-symptoms" class="panel">
+    <p class="section-title">Symptoms and body impact</p>
+    <p class="section-sub">Anemia affects multiple organs and systems. The severity depends on how low hemoglobin drops and how quickly. Click a symptom card to learn why it occurs.</p>
+    <div id="symp-cards" class="cards">
+      <div class="card" onclick="selectSymp('fatigue')"><div class="card-label"><i class="ti ti-bolt" aria-hidden="true"></i> Fatigue &amp; weakness</div><div class="card-value danger" style="font-size:14px;">Very common</div></div>
+      <div class="card" onclick="selectSymp('pallor')"><div class="card-label"><i class="ti ti-eye" aria-hidden="true"></i> Pallor (pale skin)</div><div class="card-value danger" style="font-size:14px;">Common</div></div>
+      <div class="card" onclick="selectSymp('sob')"><div class="card-label"><i class="ti ti-activity" aria-hidden="true"></i> Shortness of breath</div><div class="card-value danger" style="font-size:14px;">Moderate–severe</div></div>
+      <div class="card" onclick="selectSymp('tachy')"><div class="card-label"><i class="ti ti-heart-rate-monitor" aria-hidden="true"></i> Rapid heartbeat</div><div class="card-value danger" style="font-size:14px;">Compensatory</div></div>
+      <div class="card" onclick="selectSymp('dizziness')"><div class="card-label"><i class="ti ti-refresh" aria-hidden="true"></i> Dizziness</div><div class="card-value" style="font-size:14px;">Common</div></div>
+      <div class="card" onclick="selectSymp('coldext')"><div class="card-label"><i class="ti ti-temperature" aria-hidden="true"></i> Cold hands &amp; feet</div><div class="card-value" style="font-size:14px;">Peripheral</div></div>
+    </div>
+    <div id="symp-detail" class="detail-box" style="display:none">
+      <h3 id="symp-title"></h3>
+      <p id="symp-desc"></p>
+    </div>
+  </div>
+
+  <!-- SIMULATION -->
+  <div id="panel-sim" class="panel">
+    <p class="section-title">Interactive blood simulation</p>
+    <p class="section-sub">Adjust the sliders to simulate different levels of anemia severity and see how the body responds in real time.</p>
+    <div class="slider-row">
+      <label>Hemoglobin (g/dL)</label>
+      <input type="range" min="2" max="17" step="0.5" value="14" id="hb-slider" oninput="updateSim()">
+      <span id="hb-val">14.0</span>
+    </div>
+    <div class="slider-row">
+      <label>Iron stores (%)</label>
+      <input type="range" min="0" max="100" step="1" value="80" id="fe-slider" oninput="updateSim()">
+      <span id="fe-val">80%</span>
+    </div>
+    <div id="sim-status" class="detail-box">
+      <h3 id="sim-severity">Status: Normal</h3>
+      <p id="sim-desc-text">Hemoglobin is within the healthy range. Red blood cells are fully loaded with oxygen and delivering it efficiently to all tissues.</p>
+    </div>
+    <svg width="100%" viewBox="0 0 680 200" id="sim-svg" role="img">
+      <title>Blood simulation visualizer</title>
+      <desc>A simulated blood vessel showing red blood cells. Density and color update based on hemoglobin level.</desc>
+      <rect x="0" y="10" width="680" height="180" rx="20" fill="#FAECE7" stroke="#D85A30" stroke-width="1.5"/>
+      <g id="rbc-group"></g>
+    </svg>
+    <div class="cards" style="margin-top:1rem" id="sim-stats">
+      <div class="card"><div class="card-label">Heart rate</div><div class="card-value" id="st-hr">72 bpm</div></div>
+      <div class="card"><div class="card-label">O₂ saturation</div><div class="card-value" id="st-o2">98%</div></div>
+      <div class="card"><div class="card-label">Energy level</div><div class="card-value" id="st-energy">High</div></div>
+      <div class="card"><div class="card-label">Severity</div><div class="card-value" id="st-sev">None</div></div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="panel-quiz" class="panel">
+    <p class="section-title">Knowledge quiz</p>
+    <p class="section-sub">Test what you've learned about anemia. 8 questions covering causes, types, symptoms, and treatment.</p>
+    <div class="quiz-progress" id="qprogress"></div>
+    <div id="quiz-body"></div>
+  </div>
+</div>
+
+<script>
+const typeData = {
+  iron: { title: 'Iron-deficiency anemia', desc: 'The most common type worldwide. The body lacks enough iron to produce hemoglobin. Causes: poor diet, chronic blood loss (e.g. heavy periods, GI bleeding), poor absorption. RBCs become small and pale (microcytic hypochromic). Treatment: iron supplements, dietary changes.' },
+  b12: { title: 'Megaloblastic anemia (B12 / folate deficiency)', desc: 'Without B12 or folate, red blood cells grow abnormally large and cannot function properly. Causes: strict vegan diet, pernicious anemia (autoimmune), malabsorption. RBCs are large and fewer in number. Treatment: B12 injections or supplements, folate supplementation.' },
+  sickle: { title: 'Sickle cell anemia', desc: 'A genetic disorder where a mutation causes hemoglobin to form rigid, sickle-shaped RBCs. These block small blood vessels and break down faster than normal. Inherited in an autosomal recessive pattern. Common in sub-Saharan Africa, Mediterranean, Middle East.' },
+  aplastic: { title: 'Aplastic anemia', desc: 'The bone marrow stops producing enough new blood cells of all types (RBCs, WBCs, platelets). Can be caused by autoimmune attack on stem cells, radiation, toxic chemicals, or certain drugs. Requires bone marrow transplant or immunosuppressive therapy.' },
+  hemolytic: { title: 'Hemolytic anemia', desc: 'RBCs are destroyed faster than the bone marrow can replace them. Can be autoimmune (body attacks own cells), hereditary (e.g. G6PD deficiency), or due to infections. Bilirubin from broken cells can cause jaundice.' },
+  chronic: { title: 'Anemia of chronic disease (ACD)', desc: 'Chronic inflammatory conditions (rheumatoid arthritis, cancer, kidney disease, HIV) cause the body to sequester iron and suppress RBC production as part of the immune response. Treating the underlying disease is key.' }
+};
+const sympData = {
+  fatigue: { title: 'Fatigue and weakness', desc: 'When hemoglobin falls, muscles and organs receive less oxygen, making energy production (ATP synthesis in mitochondria) less efficient. The result is persistent tiredness that rest cannot fully relieve — your cells are literally running low on fuel.' },
+  pallor: { title: 'Pallor (pale skin, mucous membranes)', desc: 'Hemoglobin gives blood its red color. With less hemoglobin, blood becomes a lighter pink. This shows through the skin, inner eyelids (conjunctival pallor), gums, and nail beds — a reliable clinical sign used by doctors.' },
+  sob: { title: 'Shortness of breath', desc: 'The body tries to compensate for low oxygen delivery by breathing faster and deeper. Even mild exertion causes breathlessness because oxygen-carrying capacity is insufficient to meet the demand of working muscles.' },
+  tachy: { title: 'Rapid heartbeat (tachycardia)', desc: 'The heart compensates for reduced oxygen per RBC by pumping faster, increasing cardiac output. Prolonged tachycardia due to severe anemia can strain the heart and may lead to cardiac failure in untreated cases.' },
+  dizziness: { title: 'Dizziness and headaches', desc: 'The brain is highly sensitive to oxygen deprivation. Reduced cerebral oxygen delivery causes lightheadedness, dizziness on standing (orthostatic symptoms), and headaches, especially with sudden movements.' },
+  coldext: { title: 'Cold hands and feet', desc: 'The body prioritizes oxygen delivery to vital organs (brain, heart) by constricting blood vessels to the extremities. This peripheral vasoconstriction makes hands and feet feel cold and may cause tingling.' }
+};
+const quizData = [
+  { q: 'What is the primary function of hemoglobin?', opts: ['Clot blood after injury','Carry oxygen from lungs to tissues','Fight bacterial infections','Produce energy in cells'], correct: 1, exp: 'Hemoglobin is the iron-containing protein in red blood cells that binds oxygen in the lungs and releases it to body tissues.' },
+  { q: 'Which type of anemia is most common globally?', opts: ['Aplastic anemia','Sickle cell anemia','Iron-deficiency anemia','Megaloblastic anemia'], correct: 2, exp: 'Iron-deficiency anemia accounts for nearly half of all anemia cases worldwide, affecting over 1 billion people.' },
+  { q: 'What is the WHO hemoglobin threshold for anemia in adult women?', opts: ['Below 14 g/dL','Below 10 g/dL','Below 12 g/dL','Below 8 g/dL'], correct: 2, exp: 'The WHO defines anemia in adult non-pregnant women as hemoglobin below 12 g/dL, and in adult men below 13 g/dL.' },
+  { q: 'How does anemia cause tachycardia (rapid heartbeat)?', opts: ['The heart muscle becomes inflamed','The heart beats faster to compensate for reduced oxygen per RBC','Low iron damages heart valves directly','High bilirubin stimulates heart rate'], correct: 1, exp: 'When each red blood cell carries less oxygen, the heart compensates by pumping more rapidly to maintain adequate oxygen delivery to organs.' },
+  { q: 'Sickle cell anemia is caused by:', opts: ['Iron deficiency in diet','A mutation in the hemoglobin gene','An autoimmune attack on bone marrow','Vitamin B12 deficiency'], correct: 1, exp: 'Sickle cell anemia results from a single point mutation in the HBB gene, causing hemoglobin to polymerize under low oxygen, distorting RBCs into a rigid sickle shape.' },
+  { q: 'Which symptom is a direct result of blood being diverted away from the extremities?', opts: ['Shortness of breath','Jaundice','Cold hands and feet','Headache'], correct: 2, exp: 'In anemia, peripheral vasoconstriction redirects blood to vital organs like the brain and heart, leaving hands and feet cold and sometimes tingly.' },
+  { q: 'What happens to red blood cells in aplastic anemia?', opts: ['They are too large and misshapen','The bone marrow stops producing enough of them','They carry an abnormal hemoglobin type','They are destroyed by the immune system in the spleen'], correct: 1, exp: 'Aplastic anemia is a bone marrow failure syndrome — the stem cells responsible for producing all blood cells are destroyed or suppressed, leading to very low counts of all blood cell types.' },
+  { q: 'Which of these is NOT a common cause of iron-deficiency anemia?', opts: ['Heavy menstrual bleeding','Inadequate iron in diet','Vitamin D deficiency','Gastrointestinal blood loss'], correct: 2, exp: 'Vitamin D deficiency does not cause iron-deficiency anemia. The common causes are insufficient dietary iron, blood loss (e.g. menstruation, GI bleeding), or poor intestinal absorption.' }
+];
+let qState = { idx: 0, chosen: Array(quizData.length).fill(null), answered: false };
+
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  const btns = document.querySelectorAll('.nav button');
+  const map = ['intro','types','cause','symptoms','sim','quiz'];
+  btns[map.indexOf(id)]?.classList.add('active');
+  if (id === 'sim') updateSim();
+  if (id === 'quiz') renderQuiz();
+}
+
+function selectType(k) {
+  document.querySelectorAll('#type-cards .card').forEach(c => c.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  const d = typeData[k];
+  document.getElementById('type-detail').style.display = 'block';
+  document.getElementById('type-title').textContent = d.title;
+  document.getElementById('type-desc').textContent = d.desc;
+}
+function selectSymp(k) {
+  document.querySelectorAll('#symp-cards .card').forEach(c => c.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  const d = sympData[k];
+  document.getElementById('symp-detail').style.display = 'block';
+  document.getElementById('symp-title').textContent = d.title;
+  document.getElementById('symp-desc').textContent = d.desc;
+}
+
+function updateSim() {
+  const hb = parseFloat(document.getElementById('hb-slider').value);
+  const fe = parseInt(document.getElementById('fe-slider').value);
+  document.getElementById('hb-val').textContent = hb.toFixed(1);
+  document.getElementById('fe-val').textContent = fe + '%';
+
+  let severity, desc, hr, o2, energy, sevLabel, fill, count;
+  if (hb >= 12) {
+    severity = 'Normal'; desc = 'Hemoglobin is within the healthy range. Red blood cells are fully loaded with oxygen and delivering it efficiently to all tissues.'; hr = 72; o2 = '98%'; energy = 'High'; sevLabel = 'None'; fill = '#D85A30'; count = 12;
+  } else if (hb >= 10) {
+    severity = 'Mild anemia'; desc = 'Slightly below normal. The body compensates well. You may notice mild fatigue on exertion, but most activities feel normal. Heart rate may be slightly elevated.'; hr = 82; o2 = '95%'; energy = 'Moderate'; sevLabel = 'Mild'; fill = '#EF8B2C'; count = 8;
+  } else if (hb >= 7) {
+    severity = 'Moderate anemia'; desc = 'Noticeably low hemoglobin. Fatigue, pallor, shortness of breath on exertion, and palpitations are common. The heart works harder to compensate.'; hr = 98; o2 = '90%'; energy = 'Low'; sevLabel = 'Moderate'; fill = '#C27A3F'; count = 5;
+  } else {
+    severity = 'Severe anemia'; desc = 'Critically low hemoglobin. Tissue oxygenation is severely compromised. Symptoms at rest include extreme fatigue, dyspnea, chest pain, and risk of cardiac failure. Requires urgent treatment.'; hr = 118; o2 = '82%'; energy = 'Very low'; sevLabel = 'Severe'; fill = '#888780'; count = 3;
+  }
+
+  document.getElementById('sim-severity').textContent = 'Status: ' + severity;
+  document.getElementById('sim-desc-text').textContent = desc;
+  document.getElementById('st-hr').textContent = hr + ' bpm';
+  document.getElementById('st-hr').className = 'card-value ' + (hr > 90 ? 'danger' : 'ok');
+  document.getElementById('st-o2').textContent = o2;
+  document.getElementById('st-o2').className = 'card-value ' + (parseInt(o2) < 90 ? 'danger' : 'ok');
+  document.getElementById('st-energy').textContent = energy;
+  document.getElementById('st-energy').className = 'card-value ' + (energy === 'High' || energy === 'Moderate' ? 'ok' : 'danger');
+  document.getElementById('st-sev').textContent = sevLabel;
+  document.getElementById('st-sev').className = 'card-value ' + (sevLabel === 'None' ? 'ok' : 'danger');
+
+  const g = document.getElementById('rbc-group');
+  const positions = [
+    [70,80],[130,110],[190,75],[250,105],[320,80],[390,115],[450,80],[520,105],[590,80],[640,115],[105,145],[265,145],[425,145],[575,145],[155,60],[355,55],[535,60]
+  ];
+  g.innerHTML = '';
+  for (let i = 0; i < Math.min(count, positions.length); i++) {
+    const [cx, cy] = positions[i];
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', '9');
+    circle.setAttribute('fill', fill); circle.setAttribute('opacity', '0.9');
+    circle.style.animation = `pulse ${1.5 + i*0.2}s ease-in-out infinite`;
+    g.appendChild(circle);
+  }
+}
+
+function renderQuiz() {
+  const progress = document.getElementById('qprogress');
+  progress.innerHTML = quizData.map((_, i) => {
+    let cls = 'q-dot';
+    if (i === qState.idx) cls += ' current';
+    else if (qState.chosen[i] !== null) cls += qState.chosen[i] === quizData[i].correct ? ' done-correct' : ' done-wrong';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+
+  const body = document.getElementById('quiz-body');
+  const allDone = qState.chosen.every(c => c !== null);
+  if (allDone && qState.idx >= quizData.length) {
+    const score = qState.chosen.filter((c, i) => c === quizData[i].correct).length;
+    body.innerHTML = `<div class="score-box"><div class="score-num">${score}/${quizData.length}</div><div class="score-label">${score === quizData.length ? 'Perfect score!' : score >= 6 ? 'Great job!' : score >= 4 ? 'Good effort — review the panels above.' : 'Keep studying — the simulation panels will help!'}</div><button onclick="resetQuiz()" style="margin-top:1.5rem">Try again</button></div>`;
+    return;
+  }
+  const q = quizData[qState.idx];
+  const chosen = qState.chosen[qState.idx];
+  const answered = chosen !== null;
+  body.innerHTML = `
+    <div class="quiz-q">Question ${qState.idx + 1} of ${quizData.length}: ${q.q}</div>
+    <div class="quiz-opts">${q.opts.map((o, i) => {
+      let cls = 'quiz-opt';
+      if (answered) { if (i === q.correct) cls += ' correct'; else if (i === chosen && chosen !== q.correct) cls += ' wrong'; }
+      return `<button class="${cls}" ${answered ? 'disabled' : `onclick="answerQuiz(${i})"`}>${o}</button>`;
+    }).join('')}</div>
+    ${answered ? `<div class="quiz-feedback ${chosen === q.correct ? 'correct' : 'wrong'}">${chosen === q.correct ? '✓ Correct — ' : '✗ Incorrect — '}${q.exp}</div>
+    <button onclick="nextQuestion()">${qState.idx < quizData.length - 1 ? 'Next question →' : 'See results'}</button>` : ''}
+  `;
+}
+
+function answerQuiz(i) {
+  qState.chosen[qState.idx] = i;
+  renderQuiz();
+}
+function nextQuestion() {
+  qState.idx++;
+  renderQuiz();
+}
+function resetQuiz() {
+  qState = { idx: 0, chosen: Array(quizData.length).fill(null), answered: false };
+  renderQuiz();
+}
+
+updateSim();
+renderQuiz();
+</script>

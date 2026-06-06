@@ -15,7 +15,7 @@
   --color-card: rgba(31, 26, 24, 0.4);
   --color-card-border: rgba(82, 78, 76, 0.3);
   
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   
   /* Additional premium utilities */
   --shadow-glow: 0 0 40px rgba(217, 93, 57, 0.15);

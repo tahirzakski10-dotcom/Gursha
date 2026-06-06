@@ -67,7 +67,7 @@ class AppConfig:
     
     # API Settings
     MAX_IMAGE_SIZE_MB = 10
-    ALLOWED_IMAGE_FORMATS = {'JPEG', 'PNG', 'JPG'}
+    ALLOWED_IMAGE_FORMATS = {'JPEG', 'PNG', 'JPG', 'WEBP'}
     REQUEST_TIMEOUT = 30
     
     # CORS
@@ -204,14 +204,19 @@ def validate_image(file: UploadFile) -> Image.Image:
     
     # Check file size
     max_size = AppConfig.MAX_IMAGE_SIZE_MB * 1024 * 1024
-    if len(file.file.getvalue()) > max_size:
+    # Read the file content to determine size
+    file_bytes = file.file.read()
+    if len(file_bytes) > max_size:
         raise HTTPException(
             status_code=400,
             detail=f"File size exceeds {AppConfig.MAX_IMAGE_SIZE_MB}MB limit"
         )
-    
+
+    # Reset file pointer for subsequent reads
+    file.file.seek(0)
+
     # Check file format
-    if file.content_type not in ['image/jpeg', 'image/png', 'image/jpg']:
+    if file.content_type not in ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']:
         raise HTTPException(
             status_code=400,
             detail=f"Invalid image format. Allowed: JPEG, PNG"

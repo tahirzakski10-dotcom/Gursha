@@ -1,0 +1,58 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "scanMeal": "Scan Meal",
+    "history": "History",
+    "reports": "Reports",
+    "aiCoach": "AI Coach",
+    "performance": "Performance+",
+    "diseases": "Diseases",
+    "futureGoals": "Future Goals",
+    "profile": "Profile"
+  },
+  "dashboard": {
+    "goodMorning": "Good morning!",
+    "wellnessBalance": "Here is your daily EthioPlate wellness balance.",
+    "exploreInsights": "Explore your {{tab}} insights.",
+    "logMeal": "Log Meal",
+    "mealsToday": "Meals Today",
+    "calories": "Calories",
+    "protein": "Protein",
+    "fiber": "Fiber",
+    "latestAnalysis": "Latest Meal Analysis",
+    "noMeals": "No meals logged today",
+    "uploadPhoto": "Upload a photo of your meal to get personalized Ethiopian nutrition insights.",
+    "profileContext": "Your Profile Context",
+    "healthGoals": "Health Goals",
+    "trackedConditions": "Tracked Conditions",
+    "activityLevel": "Activity Level",
+    "noneSet": "None set",
+    "notSet": "Not set",
+    "insight": "Insight {{number}}"
+  },
+  "recommendations": {
+    "lowProtein": "This meal is low in protein. Consider adding a boiled egg, lentils, or Kitfo to meet your protein needs.",
+    "goodProtein": "Great protein intake! This meal covers a strong portion of your daily protein target.",
+    "lowIron": "Your iron intake is low this meal. Add leafy greens like Gomen (collard greens) or pair with Vitamin C for better absorption.",
+    "lowFiber": "This meal needs more fiber. Add vegetables, lentils, or choose whole-grain Injera to improve digestion.",
+    "lowVitA": "Consider adding Vitamin A-rich foods like carrots, sweet potatoes, or dark leafy greens.",
+    "lowVitC": "Adding a tomato salad or fresh lemon juice would boost your Vitamin C and improve iron absorption.",
+    "highFat": "This meal is high in fats. If managing weight, consider lighter cooking methods or less Niter Kibbeh (spiced butter).",
+    "highCarbLowProtein": "This is a very carb-heavy meal with little protein. Add eggs, meat, or legumes to balance blood sugar.",
+    "diabetesWarning": "⚕️ With diabetes, monitor carb-heavy meals. Pair carbs with protein and fiber to slow glucose release.",
+    "anemiaWarning": "⚕️ For anemia management, prioritize iron-rich foods like Kitfo, Tire Siga, or teff-based Injera with Vitamin C.",
+    "hypertensionWarning": "⚕️ With hypertension, reduce high-fat preparations. Choose grilled Tibs over fried, and limit added butter.",
+    "cholesterolWarning": "⚕️ For cholesterol management, favor plant-based dishes like Shiro, Misir Wat, and Beyaynetu.",
+    "weightLossGoal": "🎯 For weight loss, this meal is calorie-dense. Consider smaller portions or more vegetable-based dishes.",
+    "muscleGoal": "🎯 For muscle building, aim for higher protein. Add grilled chicken, eggs, or extra lentils.",
+    "energyGoal": "🎯 For sustained energy, include complex carbs like teff Injera or barley (Tihlo).",
+    "wellBalanced": "This is a well-balanced meal! Great job maintaining nutritional diversity."
+  },
+  "common": {
+    "language": "Language",
+    "cancel": "Cancel",
+    "save": "Save",
+    "next": "Next",
+    "back": "Back"
+  }
+}

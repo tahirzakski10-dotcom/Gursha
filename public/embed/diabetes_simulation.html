@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journey of Diabetes Inside the Human Body</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0e1a;--bg2:#111827;--bg3:#1a2236;--bg4:#212d44;
+  --border:#2a3a5c;--border2:#3a4e70;
+  --text:#e8edf8;--text2:#8fa3c7;--text3:#5a7099;
+  --green:#22c55e;--green2:#16a34a;--greenb:#052e16;
+  --red:#ef4444;--redb:#450a0a;
+  --blue:#3b82f6;--blueb:#1e3a8a;
+  --amber:#f59e0b;--amberb:#451a03;
+  --purple:#a855f7;--purpleb:#3b0764;
+  --cyan:#06b6d4;--cyanb:#164e63;
+}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+h1{font-size:20px;font-weight:600}h2{font-size:16px;font-weight:600}h3{font-size:14px;font-weight:500}
+.app{display:grid;grid-template-columns:200px 1fr;grid-template-rows:56px 1fr;height:100vh}
+.header{grid-column:1/-1;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;padding:0 20px}
+.logo{width:32px;height:32px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.badge{background:var(--blueb);color:var(--blue);font-size:11px;padding:2px 8px;border-radius:12px;font-weight:500}
+.nav{background:var(--bg2);border-right:1px solid var(--border);padding:12px 8px;display:flex;flex-direction:column;gap:4px;overflow-y:auto}
+.nav-btn{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;border:none;background:none;color:var(--text2);cursor:pointer;font-size:12px;font-family:inherit;text-align:left;transition:all .15s;width:100%}
+.nav-btn:hover{background:var(--bg3);color:var(--text)}
+.nav-btn.active{background:var(--bg4);color:var(--blue);border:1px solid var(--border2)}
+.nav-icon{width:18px;height:18px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.main{overflow-y:auto;background:var(--bg);padding:20px}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.stat{background:var(--bg3);border-radius:8px;padding:10px 12px;text-align:center}
+.stat-val{font-size:22px;font-weight:600;font-family:'DM Mono',monospace}
+.stat-lbl{font-size:11px;color:var(--text3);margin-top:2px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);cursor:pointer;font-size:13px;font-family:inherit;transition:all .15s}
+.btn:hover{background:var(--bg4);border-color:var(--blue)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover{background:#2563eb}
+.btn.danger{background:var(--red);border-color:var(--red);color:#fff}
+.btn.success{background:var(--green2);border-color:var(--green2);color:#fff}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:500}
+.tag.green{background:var(--greenb);color:var(--green)}
+.tag.red{background:var(--redb);color:var(--red)}
+.tag.amber{background:var(--amberb);color:var(--amber)}
+.tag.blue{background:var(--blueb);color:var(--blue)}
+.tag.purple{background:var(--purpleb);color:var(--purple)}
+label{font-size:12px;color:var(--text2);display:block;margin-bottom:4px}
+input[type=range]{width:100%;accent-color:var(--blue);height:4px}
+select{background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:6px;padding:6px 10px;font-family:inherit;font-size:13px}
+.progress-bar{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;margin:4px 0}
+.progress-fill{height:100%;border-radius:4px;transition:width .5s}
+.organ-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.organ-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;transition:all .15s;text-align:center}
+.organ-card:hover{border-color:var(--blue);background:var(--bg4)}
+.organ-card.selected{border-color:var(--blue);background:var(--blueb)}
+.organ-icon{font-size:28px;margin-bottom:6px}
+.organ-name{font-size:12px;font-weight:500}
+.timeline{display:flex;gap:0;margin:16px 0}
+.tl-stage{flex:1;padding:10px;text-align:center;border:1px solid var(--border);font-size:11px;transition:all .3s}
+.tl-stage:first-child{border-radius:8px 0 0 8px}
+.tl-stage:last-child{border-radius:0 8px 8px 0}
+.tl-stage.active{border-color:var(--amber);background:var(--amberb);color:var(--amber)}
+.body-svg{width:100%;max-width:260px;margin:0 auto;display:block}
+.molecule{animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.pulse{animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+canvas{border-radius:8px}
+.symptom-item{display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg3);border-radius:8px;margin-bottom:6px;font-size:13px}
+.quiz-opt{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;margin-bottom:6px;transition:all .15s;font-size:13px}
+.quiz-opt:hover{border-color:var(--blue)}
+.quiz-opt.correct{border-color:var(--green);background:var(--greenb);color:var(--green)}
+.quiz-opt.wrong{border-color:var(--red);background:var(--redb);color:var(--red)}
+.section-title{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;margin-top:4px}
+.info-box{background:var(--bg3);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:10px 14px;font-size:13px;color:var(--text2);margin:10px 0}
+.comparison{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cmp-col{border-radius:10px;padding:14px}
+.cmp-healthy{background:var(--greenb);border:1px solid var(--green2)}
+.cmp-diabetic{background:var(--redb);border:1px solid var(--red)}
+.molecule-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin:2px}
+.scrollable{max-height:320px;overflow-y:auto;padding-right:4px}
+.scrollable::-webkit-scrollbar{width:4px}
+.scrollable::-webkit-scrollbar-track{background:var(--bg3)}
+.scrollable::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo">🫀</div>
+    <div>
+      <div style="font-weight:600;font-size:15px">Journey of Diabetes Inside the Human Body</div>
+      <div style="font-size:11px;color:var(--text3)">Interactive Educational Simulation</div>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <span class="badge">Science Accurate</span>
+      <span id="mode-badge" class="tag green">● Healthy Mode</span>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <div class="section-title" style="padding:0 6px">Modes</div>
+    <button class="nav-btn active" onclick="showPanel('healthy')" id="nb-healthy"><span class="nav-icon" style="background:var(--greenb);color:var(--green)">💚</span>Healthy Body</button>
+    <button class="nav-btn" onclick="showPanel('t1d')" id="nb-t1d"><span class="nav-icon" style="background:var(--redb);color:var(--red)">🔴</span>Type 1 Diabetes</button>
+    <button class="nav-btn" onclick="showPanel('t2d')" id="nb-t2d"><span class="nav-icon" style="background:var(--amberb);color:var(--amber)">🟡</span>Type 2 Diabetes</button>
+    <div class="section-title" style="padding:0 6px;margin-top:8px">Labs & Tools</div>
+    <button class="nav-btn" onclick="showPanel('lab')" id="nb-lab"><span class="nav-icon" style="background:var(--blueb);color:var(--blue)">🧪</span>Insulin Lab</button>
+    <button class="nav-btn" onclick="showPanel('lifestyle')" id="nb-lifestyle"><span class="nav-icon" style="background:var(--purpleb);color:var(--purple)">🏃</span>Lifestyle Factors</button>
+    <button class="nav-btn" onclick="showPanel('complications')" id="nb-complications"><span class="nav-icon" style="background:var(--redb);color:var(--red)">⚠️</span>Complications</button>
+    <button class="nav-btn" onclick="showPanel('organs')" id="nb-organs"><span class="nav-icon" style="background:var(--cyanb);color:var(--cyan)">🫁</span>Organ Explorer</button>
+    <button class="nav-btn" onclick="showPanel('bloodstream')" id="nb-bloodstream"><span class="nav-icon" style="background:var(--redb);color:var(--red)">🔬</span>Bloodstream View</button>
+    <button class="nav-btn" onclick="showPanel('management')" id="nb-management"><span class="nav-icon" style="background:var(--greenb);color:var(--green)">💊</span>Management</button>
+    <button class="nav-btn" onclick="showPanel('quiz')" id="nb-quiz"><span class="nav-icon" style="background:var(--amberb);color:var(--amber)">❓</span>Quiz Mode</button>
+  </nav>
+
+  <main class="main">
+
+    <!-- HEALTHY BODY -->
+    <div class="panel active" id="panel-healthy">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h2>💚 Healthy Body — Glucose-Insulin Cycle</h2>
+        <span class="tag green">Normal Function</span>
+      </div>
+      <div class="grid2">
+        <div>
+          <div class="card">
+            <h3 style="margin-bottom:10px">🍽️ Simulate a Meal</h3>
+            <label>Meal type</label>
+            <select id="h-meal" onchange="updateHealthy()">
+              <option value="low">Low-carb meal (salad)</option>
+              <option value="med" selected>Medium meal (rice + chicken)</option>
+              <option value="high">High-carb meal (pasta, bread, soda)</option>
+            </select>
+            <div style="margin-top:10px">
+              <label>Carbohydrates: <span id="h-carb-val">60g</span></label>
+              <input type="range" id="h-carbs" min="10" max="150" value="60" oninput="updateHealthy()">
+            </div>
+            <button class="btn primary" style="margin-top:10px;width:100%" onclick="simulateMeal()">▶ Eat & Simulate</button>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:10px">📊 Real-time Stats</h3>
+            <div class="grid2">
+              <div class="stat"><div class="stat-val" id="h-glucose" style="color:var(--green)">95</div><div class="stat-lbl">Blood Glucose (mg/dL)</div></div>
+              <div class="stat"><div class="stat-val" id="h-insulin" style="color:var(--blue)">8</div><div class="stat-lbl">Insulin (µU/mL)</div></div>
+              <div class="stat"><div class="stat-val" id="h-glucagon" style="color:var(--amber)">80</div><div class="stat-lbl">Glucagon (pg/mL)</div></div>
+              <div class="stat"><div class="stat-val" id="h-energy" style="color:var(--purple)">100%</div><div class="stat-lbl">Cell Energy</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:8px">🔄 Process Status</h3>
+            <div id="h-steps" class="scrollable"></div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="text-align:center">
+            <h3 style="margin-bottom:10px">Body Visualization</h3>
+            <svg class="body-svg" viewBox="0 0 200 380" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="100" cy="42" rx="30" ry="38" fill="#1a2236" stroke="#3a4e70" stroke-width="1.5"/>
+              <rect x="65" y="75" width="70" height="110" rx="10" fill="#1a2236" stroke="#3a4e70" stroke-width="1.5"/>
+              <path d="M65 85 Q40 90 35 150 Q33 165 40 180 L60 175 Q58 150 65 140Z" fill="#1a2236" stroke="#3a4e70" stroke-width="1.2"/>
+              <path d="M135 85 Q160 90 165 150 Q167 165 160 180 L140 175 Q142 150 135 140Z" fill="#1a2236" stroke="#3a4e70" stroke-width="1.2"/>
+              <path d="M75 185 Q72 230 70 260 Q68 280 70 300 L85 300 Q88 270 90 240 Q95 260 100 300 L115 300 Q115 270 110 240 Q112 270 115 300 L130 300 Q132 280 130 260 Q128 230 125 185Z" fill="#1a2236" stroke="#3a4e70" stroke-width="1.2"/>
+              <ellipse cx="100" cy="125" rx="22" ry="18" fill="#2d1b00" stroke="#f59e0b" stroke-width="1.5" opacity="0.7"/>
+              <text x="100" y="129" text-anchor="middle" fill="#f59e0b" font-size="8">Stomach</text>
+              <rect x="78" y="150" width="44" height="16" rx="8" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1.5"/>
+              <text x="100" y="161" text-anchor="middle" fill="#93c5fd" font-size="7">Pancreas</text>
+              <ellipse cx="82" cy="112" rx="18" ry="12" fill="#1a3d1a" stroke="#22c55e" stroke-width="1.2"/>
+              <text x="82" y="115" text-anchor="middle" fill="#86efac" font-size="7">Liver</text>
+              <ellipse cx="118" cy="105" rx="12" ry="13" fill="#450a0a" stroke="#ef4444" stroke-width="1.5" class="pulse"/>
+              <text x="118" y="108" text-anchor="middle" fill="#fca5a5" font-size="6">Heart</text>
+              <ellipse cx="83" cy="170" rx="9" ry="13" fill="#1a2d4d" stroke="#06b6d4" stroke-width="1"/>
+              <ellipse cx="117" cy="170" rx="9" ry="13" fill="#1a2d4d" stroke="#06b6d4" stroke-width="1"/>
+              <text x="83" y="174" text-anchor="middle" fill="#67e8f9" font-size="6">Kidney</text>
+              <text x="117" y="174" text-anchor="middle" fill="#67e8f9" font-size="6">Kidney</text>
+              <circle cx="110" cy="95" r="4" fill="#f59e0b" opacity="0.9" class="molecule"/>
+              <circle cx="90" cy="88" r="3" fill="#f59e0b" opacity="0.7" class="molecule" style="animation-delay:.5s"/>
+              <circle cx="115" cy="135" r="4" fill="#3b82f6" opacity="0.9" class="molecule" style="animation-delay:1s"/>
+              <circle cx="88" cy="140" r="3" fill="#3b82f6" opacity="0.7" class="molecule" style="animation-delay:1.5s"/>
+            </svg>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:8px">📈 Blood Glucose Graph</h3>
+            <canvas id="h-chart" height="140"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="info-box"><b>How it works:</b> After a meal, carbohydrates break down into glucose in the small intestine. As blood glucose rises, pancreatic beta cells detect this and release insulin. Insulin acts like a "key" unlocking cell receptors, allowing glucose to enter muscle, liver, and fat cells. Blood sugar returns to the normal range of 70–100 mg/dL.</div>
+    </div>
+
+    <!-- TYPE 1 DIABETES -->
+    <div class="panel" id="panel-t1d">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h2>🔴 Type 1 Diabetes — Autoimmune Attack</h2>
+        <span class="tag red">Insulin Deficiency</span>
+      </div>
+      <div class="grid2">
+        <div>
+          <div class="card">
+            <h3 style="margin-bottom:10px">⚔️ Autoimmune Progression</h3>
+            <label>Beta cell destruction: <span id="t1-progress-val">75%</span></label>
+            <input type="range" id="t1-progress" min="0" max="100" value="75" oninput="updateT1D()">
+            <div style="margin-top:10px">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3)"><span>Beta cells remaining</span><span id="t1-cells-left">25%</span></div>
+              <div class="progress-bar"><div class="progress-fill" id="t1-cells-bar" style="background:var(--green);width:25%"></div></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:6px"><span>Insulin production</span><span id="t1-insulin-prod">10%</span></div>
+              <div class="progress-bar"><div class="progress-fill" id="t1-insulin-bar" style="background:var(--blue);width:10%"></div></div>
+            </div>
+            <div style="margin-top:12px">
+              <div class="stat" style="background:var(--redb)"><div class="stat-val" id="t1-glucose" style="color:var(--red)">340</div><div class="stat-lbl">Blood Glucose (mg/dL) ⬆ CRITICAL</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:10px">🩸 What's Happening</h3>
+            <div class="comparison">
+              <div class="cmp-col cmp-healthy"><div style="font-size:11px;font-weight:600;color:var(--green);margin-bottom:8px">HEALTHY</div><div style="font-size:12px;color:#86efac">✓ Beta cells intact<br>✓ Insulin released<br>✓ Glucose enters cells<br>✓ Normal energy</div></div>
+              <div class="cmp-col cmp-diabetic"><div style="font-size:11px;font-weight:600;color:var(--red);margin-bottom:8px">TYPE 1 DIABETIC</div><div style="font-size:12px;color:#fca5a5">✗ Beta cells destroyed<br>✗ No insulin produced<br>✗ Glucose trapped<br>✗ Cells starving</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:10px">⚠️ Symptoms</h3>
+            <div id="t1-symptoms"></div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <h3 style="margin-bottom:10px">🦠 Immune Attack Visualization</h3>
+            <svg width="100%" viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+              <defs><radialGradient id="bg-grad" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#1a3d1a" stop-opacity="0.3"/><stop offset="100%" stop-color="#0a0e1a" stop-opacity="0"/></radialGradient></defs>
+              <rect width="300" height="220" fill="url(#bg-grad)"/>
+              <ellipse cx="150" cy="110" rx="55" ry="45" fill="#0f2d0f" stroke="#22c55e" stroke-width="1.5" opacity="0.5"/>
+              <text x="150" y="175" text-anchor="middle" fill="#4ade80" font-size="9">Islet of Langerhans</text>
+              <rect x="125" y="88" width="20" height="16" rx="4" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1"/>
+              <text x="135" y="99" text-anchor="middle" fill="#93c5fd" font-size="6">β</text>
+              <rect x="150" y="95" width="20" height="16" rx="4" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1"/>
+              <text x="160" y="106" text-anchor="middle" fill="#93c5fd" font-size="6">β</text>
+              <rect x="130" y="110" width="20" height="16" rx="4" fill="#2d0000" stroke="#ef4444" stroke-width="1" opacity="0.6"/>
+              <text x="140" y="121" text-anchor="middle" fill="#fca5a5" font-size="6">✗</text>
+              <rect x="155" y="115" width="20" height="16" rx="4" fill="#2d0000" stroke="#ef4444" stroke-width="1" opacity="0.6"/>
+              <text x="165" y="126" text-anchor="middle" fill="#fca5a5" font-size="6">✗</text>
+              <circle cx="95" cy="100" r="12" fill="#1a1a4d" stroke="#6366f1" stroke-width="1.5" class="molecule"/>
+              <text x="95" y="104" text-anchor="middle" fill="#a5b4fc" font-size="7">WBC</text>
+              <line x1="107" y1="104" x2="124" y2="108" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,2"/>
+              <circle cx="210" cy="90" r="11" fill="#1a1a4d" stroke="#6366f1" stroke-width="1.5" class="molecule" style="animation-delay:.8s"/>
+              <text x="210" y="94" text-anchor="middle" fill="#a5b4fc" font-size="7">WBC</text>
+              <line x1="199" y1="94" x2="175" y2="100" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,2"/>
+              <circle cx="170" cy="62" r="10" fill="#1a1a4d" stroke="#6366f1" stroke-width="1.5" class="molecule" style="animation-delay:1.6s"/>
+              <text x="170" y="66" text-anchor="middle" fill="#a5b4fc" font-size="7">WBC</text>
+              <text x="30" y="30" fill="#f59e0b" font-size="8" font-weight="600">Glucose (trapped)</text>
+              <circle cx="30" cy="45" r="5" fill="#f59e0b" class="molecule"/>
+              <circle cx="45" cy="40" r="4" fill="#f59e0b" class="molecule" style="animation-delay:.4s"/>
+              <circle cx="60" cy="48" r="5" fill="#f59e0b" class="molecule" style="animation-delay:.8s"/>
+              <circle cx="40" cy="58" r="3" fill="#f59e0b" class="molecule" style="animation-delay:1.2s"/>
+              <text x="30" y="195" fill="#3b82f6" font-size="8">No insulin produced</text>
+              <circle cx="75" cy="190" r="5" fill="#3b82f6" opacity="0.2"/>
+              <text x="75" y="193" text-anchor="middle" fill="#3b82f6" font-size="7" opacity="0.5">?</text>
+            </svg>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:8px">📈 Blood Glucose Over Time</h3>
+            <canvas id="t1-chart" height="130"></canvas>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:8px">💉 Treatment: Insulin Injection</h3>
+            <p style="font-size:12px;color:var(--text2);margin-bottom:10px">People with T1D must inject insulin multiple times daily since their pancreas produces none.</p>
+            <button class="btn primary" onclick="injectInsulin('t1')">💉 Inject Insulin Dose</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TYPE 2 DIABETES -->
+    <div class="panel" id="panel-t2d">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h2>🟡 Type 2 Diabetes — Insulin Resistance</h2>
+        <span class="tag amber">Insulin Resistance</span>
+      </div>
+      <div class="grid2">
+        <div>
+          <div class="card">
+            <h3 style="margin-bottom:10px">🔒 Insulin Resistance Simulator</h3>
+            <label>Insulin resistance level: <span id="t2-resist-val">60%</span></label>
+            <input type="range" id="t2-resist" min="0" max="100" value="60" oninput="updateT2D()">
+            <label style="margin-top:10px">Years with T2D (pancreas fatigue): <span id="t2-years-val">8</span> yrs</label>
+            <input type="range" id="t2-years" min="0" max="30" value="8" oninput="updateT2D()">
+            <div style="margin-top:12px" class="grid2">
+              <div class="stat"><div class="stat-val" id="t2-glucose" style="color:var(--amber)">185</div><div class="stat-lbl">Glucose (mg/dL)</div></div>
+              <div class="stat"><div class="stat-val" id="t2-insulin-lvl" style="color:var(--blue)">45</div><div class="stat-lbl">Insulin (µU/mL)</div></div>
+              <div class="stat"><div class="stat-val" id="t2-pancreas" style="color:var(--amber)">40%</div><div class="stat-lbl">Pancreas Function</div></div>
+              <div class="stat"><div class="stat-val" id="t2-cells" style="color:var(--red)">35%</div><div class="stat-lbl">Cell Uptake</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:10px">🔬 Cell Receptor Comparison</h3>
+            <svg width="100%" viewBox="0 0 280 130" xmlns="http://www.w3.org/2000/svg">
+              <text x="70" y="15" text-anchor="middle" fill="#22c55e" font-size="9" font-weight="600">HEALTHY CELL</text>
+              <text x="210" y="15" text-anchor="middle" fill="#f59e0b" font-size="9" font-weight="600">RESISTANT CELL</text>
+              <rect x="20" y="60" width="100" height="60" rx="8" fill="#1a3d1a" stroke="#22c55e" stroke-width="1.5"/>
+              <text x="70" y="95" text-anchor="middle" fill="#4ade80" font-size="8">Muscle Cell</text>
+              <rect x="35" y="45" width="12" height="20" rx="3" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1"/>
+              <rect x="55" y="45" width="12" height="20" rx="3" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1"/>
+              <rect x="75" y="45" width="12" height="20" rx="3" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1"/>
+              <rect x="95" y="45" width="12" height="20" rx="3" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1"/>
+              <text x="70" y="35" text-anchor="middle" fill="#93c5fd" font-size="8">Receptors: OPEN ✓</text>
+              <circle cx="41" cy="38" r="5" fill="#3b82f6"/><text x="41" y="41" text-anchor="middle" fill="#fff" font-size="6">🔑</text>
+              <circle cx="61" cy="38" r="5" fill="#3b82f6"/><text x="61" y="41" text-anchor="middle" fill="#fff" font-size="6">🔑</text>
+              <rect x="160" y="60" width="100" height="60" rx="8" fill="#2d1a00" stroke="#f59e0b" stroke-width="1.5"/>
+              <text x="210" y="95" text-anchor="middle" fill="#fcd34d" font-size="8">Resistant Cell</text>
+              <rect x="175" y="45" width="12" height="20" rx="3" fill="#2d0000" stroke="#ef4444" stroke-width="1" opacity="0.7"/>
+              <rect x="195" y="45" width="12" height="20" rx="3" fill="#2d0000" stroke="#ef4444" stroke-width="1" opacity="0.7"/>
+              <rect x="215" y="45" width="12" height="20" rx="3" fill="#2d0000" stroke="#ef4444" stroke-width="1" opacity="0.7"/>
+              <rect x="235" y="45" width="12" height="20" rx="3" fill="#2d0000" stroke="#ef4444" stroke-width="1" opacity="0.7"/>
+              <text x="210" y="35" text-anchor="middle" fill="#fca5a5" font-size="8">Receptors: BLOCKED ✗</text>
+              <text x="181" y="58" fill="#fca5a5" font-size="10">🔒</text><text x="201" y="58" fill="#fca5a5" font-size="10">🔒</text>
+              <text x="221" y="58" fill="#fca5a5" font-size="10">🔒</text><text x="241" y="58" fill="#fca5a5" font-size="10">🔒</text>
+              <circle cx="190" cy="28" r="5" fill="#3b82f6" class="molecule"/><text x="190" y="31" text-anchor="middle" fill="#fff" font-size="6">💉</text>
+              <circle cx="220" cy="25" r="5" fill="#3b82f6" class="molecule" style="animation-delay:.7s"/><text x="220" y="28" text-anchor="middle" fill="#fff" font-size="6">💉</text>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <h3 style="margin-bottom:8px">📈 Progression Timeline</h3>
+            <div class="timeline">
+              <div class="tl-stage" id="t2-s1"><div>💚</div><div>Normal</div></div>
+              <div class="tl-stage" id="t2-s2"><div>🟡</div><div>Prediabetes</div></div>
+              <div class="tl-stage" id="t2-s3"><div>🟠</div><div>Early T2D</div></div>
+              <div class="tl-stage" id="t2-s4"><div>🔴</div><div>Advanced</div></div>
+            </div>
+            <canvas id="t2-chart" height="130"></canvas>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:10px">🏥 T2D vs T1D: Key Differences</h3>
+            <div style="font-size:12px">
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:6px">
+                <div style="color:var(--text3)">Feature</div><div style="color:var(--red)">T1D</div><div style="color:var(--amber)">T2D</div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px">
+                <div style="color:var(--text2)">Cause</div><div>Autoimmune</div><div>Lifestyle+genetics</div>
+                <div style="color:var(--text2)">Insulin</div><div>None made</div><div>Resistant to it</div>
+                <div style="color:var(--text2)">Onset</div><div>Sudden</div><div>Gradual</div>
+                <div style="color:var(--text2)">Treatment</div><div>Always insulin</div><div>Diet, meds, insulin</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSULIN LAB -->
+    <div class="panel" id="panel-lab">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h2>🧪 Insulin Interaction Lab</h2><span class="tag blue">Interactive</span>
+      </div>
+      <div class="grid2">
+        <div>
+          <div class="card">
+            <h3 style="margin-bottom:12px">⚙️ Lab Controls</h3>
+            <label>Insulin dose: <span id="lab-dose-val">10</span> units</label>
+            <input type="range" id="lab-dose" min="0" max="40" value="10" oninput="updateLab()">
+            <label style="margin-top:8px">Meal size: <span id="lab-meal-val">60g</span> carbs</label>
+            <input type="range" id="lab-meal" min="0" max="150" value="60" oninput="updateLab()">
+            <label style="margin-top:8px">Exercise intensity: <span id="lab-ex-val">Low</span></label>
+            <input type="range" id="lab-ex" min="0" max="3" value="0" step="1" oninput="updateLab()">
+            <label style="margin-top:8px">Diabetes type:</label>
+            <select id="lab-type" onchange="updateLab()">
+              <option value="healthy">Healthy</option>
+              <option value="t1" selected>Type 1</option>
+              <option value="t2">Type 2</option>
+            </select>
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button class="btn primary" onclick="runLabSim()">▶ Run Simulation</button>
+              <button class="btn" onclick="resetLab()">↺ Reset</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:10px">📊 Lab Outcomes</h3>
+            <div class="grid2">
+              <div class="stat"><div class="stat-val" id="lab-peak" style="color:var(--amber)">--</div><div class="stat-lbl">Peak Glucose</div></div>
+              <div class="stat"><div class="stat-val" id="lab-low" style="color:var(--blue)">--</div><div class="stat-lbl">Lowest Glucose</div></div>
+              <div class="stat"><div class="stat-val" id="lab-time" style="color:var(--purple)">--</div><div class="stat-lbl">Time in Range</div></div>
+              <div class="stat"><div class="stat-val" id="lab-risk" style="color:var(--green)">--</div><div class="stat-lbl">Risk Level</div></div>
+            </div>
+            <div id="lab-warning" style="margin-top:8px;display:none"></div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <h3 style="margin-bottom:8px">📈 Glucose Simulation Graph</h3>
+            <canvas id="lab-chart" height="200"></canvas>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:8px">💡 How Insulin Works</h3>
+            <p style="font-size:12px;color:var(--text2)">Insulin is a "key" that unlocks glucose transporters (GLUT4) on cell surfaces. Without insulin, glucose cannot enter most cells.</p>
+            <div style="margin-top:8px;font-size:11px">
+              <span class="molecule-dot" style="background:var(--amber)"></span> Glucose &nbsp;
+              <span class="molecule-dot" style="background:var(--blue)"></span> Insulin &nbsp;
+              <span class="molecule-dot" style="background:var(--green)"></span> Cell receptor
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIFESTYLE -->
+    <div class="panel" id="panel-lifestyle">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h2>🏃 Lifestyle Factors Module</h2><span class="tag purple">Interactive</span>
+      </div>
+      <div class="grid2">
+        <div>
+          <div class="card">
+            <h3 style="margin-bottom:12px">🎛️ Lifestyle Controls</h3>
+            <label>Exercise (days/week): <span id="lf-ex-val">2</span></label>
+            <input type="range" id="lf-ex" min="0" max="7" value="2" oninput="updateLifestyle()">
+            <label style="margin-top:8px">Sleep quality: <span id="lf-sleep-val">Moderate</span></label>
+            <input type="range" id="lf-sleep" min="0" max="3" value="1" step="1" oninput="updateLifestyle()">
+            <label style="margin-top:8px">Stress level: <span id="lf-stress-val">Moderate</span></label>
+            <input type="range" id="lf-stress" min="0" max="3" value="2" step="1" oninput="updateLifestyle()">
+            <label style="margin-top:8px">Diet quality: <span id="lf-diet-val">Average</span></label>
+            <input type="range" id="lf-diet" min="0" max="3" value="1" step="1" oninput="updateLifestyle()">
+            <label style="margin-top:8px">BMI category: <span id="lf-bmi-val">Overweight</span></label>
+            <input type="range" id="lf-bmi" min="0" max="3" value="2" step="1" oninput="updateLifestyle()">
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:10px">📊 Health Metrics</h3>
+            <div class="grid2">
+              <div class="stat"><div class="stat-val" id="lf-sensitivity" style="color:var(--blue)">55%</div><div class="stat-lbl">Insulin Sensitivity</div></div>
+              <div class="stat"><div class="stat-val" id="lf-pancreas" style="color:var(--purple)">78%</div><div class="stat-lbl">Pancreas Health</div></div>
+              <div class="stat"><div class="stat-val" id="lf-risk" style="color:var(--amber)">35%</div><div class="stat-lbl">T2D Risk</div></div>
+              <div class="stat"><div class="stat-val" id="lf-hba1c" style="color:var(--green)">5.9%</div><div class="stat-lbl">Est. HbA1c</div></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <h3 style="margin-bottom:8px">🕸️ Impact Radar</h3>
+            <canvas id="lf-radar" height="220"></canvas>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:8px">💡 Personalized Insights</h3>
+            <div id="lf-insights" style="font-size:12px;color:var(--text2)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPLICATIONS -->
+    <div class="panel" id="panel-complications">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h2>⚠️ Complications Timeline</h2><span class="tag red">Long-term Effects</span>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:10px">⏱️ Disease Progression</h3>
+        <label>Years with uncontrolled diabetes: <span id="comp-years-val">10</span> years</label>
+        <input type="range" id="comp-years" min="0" max="30" value="10" oninput="updateComplications()">
+        <div class="timeline" style="margin-top:12px">
+          <div class="tl-stage" id="c-s1"><div>💚</div><div>Healthy</div></div>
+          <div class="tl-stage" id="c-s2"><div>🟡</div><div>Prediabetes</div></div>
+          <div class="tl-stage" id="c-s3"><div>🟠</div><div>Early DM</div></div>
+          <div class="tl-stage" id="c-s4"><div>🔴</div><div>Advanced DM</div></div>
+        </div>
+      </div>
+      <div class="grid3" id="comp-organs"></div>
+      <div class="card" style="margin-top:16px">
+        <h3 style="margin-bottom:8px">🩸 Blood Vessel Damage</h3>
+        <svg width="100%" viewBox="0 0 400 90" xmlns="http://www.w3.org/2000/svg">
+          <text x="0" y="14" fill="#8fa3c7" font-size="10">HEALTHY VESSEL</text>
+          <rect x="0" y="20" width="170" height="30" rx="15" fill="#1a3d1a" stroke="#22c55e" stroke-width="2"/>
+          <rect x="5" y="27" width="160" height="16" rx="8" fill="#dc2626" opacity="0.8"/>
+          <text x="85" y="40" text-anchor="middle" fill="#fff" font-size="8">Normal blood flow ▶▶▶</text>
+          <text x="210" y="14" fill="#8fa3c7" font-size="10">DIABETIC VESSEL (plaque)</text>
+          <rect x="210" y="20" width="170" height="30" rx="15" fill="#2d1a00" stroke="#f59e0b" stroke-width="2"/>
+          <rect x="250" y="25" width="40" height="14" rx="4" fill="#f59e0b" opacity="0.6"/>
+          <rect x="310" y="27" width="30" height="10" rx="4" fill="#f59e0b" opacity="0.5"/>
+          <rect x="215" y="28" width="170" height="16" rx="8" fill="#dc2626" opacity="0.4"/>
+          <text x="295" y="40" text-anchor="middle" fill="#fcd34d" font-size="8">Restricted flow ▶</text>
+          <text x="85" y="72" text-anchor="middle" fill="#4ade80" font-size="9">Clear lumen — full oxygen delivery</text>
+          <text x="295" y="72" text-anchor="middle" fill="#fcd34d" font-size="9">Plaque buildup — ischemia risk</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- ORGAN EXPLORER -->
+    <div class="panel" id="panel-organs">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h2>🫁 Organ Explorer</h2><span class="tag cyan">Click an organ</span>
+      </div>
+      <div class="organ-grid" id="organ-grid"></div>
+      <div class="card" style="margin-top:16px" id="organ-detail">
+        <h3>Select an organ above to learn more</h3>
+        <p style="color:var(--text2);margin-top:6px;font-size:13px">Click any organ card to see its role in diabetes.</p>
+      </div>
+    </div>
+
+    <!-- BLOODSTREAM -->
+    <div class="panel" id="panel-bloodstream">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h2>🔬 Bloodstream View</h2><span class="tag red">Microscopic Mode</span>
+      </div>
+      <div class="grid2">
+        <div>
+          <div class="card">
+            <h3 style="margin-bottom:10px">🎛️ Controls</h3>
+            <div class="btn-row">
+              <button class="btn primary" id="bs-healthy-btn" onclick="setBloodMode('healthy')">💚 Healthy</button>
+              <button class="btn" id="bs-t1-btn" onclick="setBloodMode('t1')">🔴 T1D</button>
+              <button class="btn" id="bs-t2-btn" onclick="setBloodMode('t2')">🟡 T2D</button>
+            </div>
+            <div style="margin-top:8px">
+              <h4 style="font-size:12px;margin-bottom:6px">Legend</h4>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;font-size:11px">
+                <span><span class="molecule-dot" style="background:#dc2626"></span>Red blood cell</span>
+                <span><span class="molecule-dot" style="background:#f59e0b"></span>Glucose</span>
+                <span><span class="molecule-dot" style="background:#3b82f6"></span>Insulin</span>
+                <span><span class="molecule-dot" style="background:#6366f1"></span>White blood cell</span>
+              </div>
+            </div>
+          </div>
+          <div class="card"><h3 style="margin-bottom:8px">📊 Blood Composition</h3><div id="bs-stats"></div></div>
+          <div class="card"><h3 style="margin-bottom:8px">📖 What you're seeing</h3><p id="bs-description" style="font-size:12px;color:var(--text2)"></p></div>
+        </div>
+        <div>
+          <div class="card" style="padding:8px">
+            <canvas id="bs-canvas" width="320" height="320" style="width:100%;border-radius:8px;background:#060a14"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MANAGEMENT -->
+    <div class="panel" id="panel-management">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h2>💊 Diabetes Management</h2><span class="tag green">Self-management Simulator</span>
+      </div>
+      <div class="grid2">
+        <div>
+          <div class="card">
+            <h3 style="margin-bottom:12px">📅 Daily Plan</h3>
+            <label>Morning insulin: <span id="mgmt-insulin-val">10</span> units</label>
+            <input type="range" id="mgmt-insulin" min="0" max="40" value="10" oninput="updateManagement()">
+            <label style="margin-top:8px">Carbs per meal (avg): <span id="mgmt-carbs-val">50g</span></label>
+            <input type="range" id="mgmt-carbs" min="20" max="150" value="50" oninput="updateManagement()">
+            <label style="margin-top:8px">Exercise min/day: <span id="mgmt-ex-val">30</span> min</label>
+            <input type="range" id="mgmt-ex" min="0" max="120" value="30" oninput="updateManagement()">
+            <label style="margin-top:8px">Medication adherence: <span id="mgmt-meds-val">80%</span></label>
+            <input type="range" id="mgmt-meds" min="0" max="100" value="80" oninput="updateManagement()">
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:10px">📊 Predicted Outcomes</h3>
+            <div class="grid2">
+              <div class="stat"><div class="stat-val" id="mgmt-hba1c" style="color:var(--green)">7.2%</div><div class="stat-lbl">HbA1c</div></div>
+              <div class="stat"><div class="stat-val" id="mgmt-avg-g" style="color:var(--amber)">154</div><div class="stat-lbl">Avg Glucose</div></div>
+              <div class="stat"><div class="stat-val" id="mgmt-tir" style="color:var(--blue)">62%</div><div class="stat-lbl">Time in Range</div></div>
+              <div class="stat"><div class="stat-val" id="mgmt-risk" style="color:var(--purple)">Medium</div><div class="stat-lbl">Risk Level</div></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card"><h3 style="margin-bottom:8px">🏥 Organ Health Status</h3><div id="mgmt-organs"></div></div>
+          <div class="card"><h3 style="margin-bottom:8px">📈 Projected HbA1c Trend</h3><canvas id="mgmt-chart" height="160"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div class="panel" id="panel-quiz">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h2>❓ Quiz & Challenge Mode</h2>
+        <span id="quiz-score-badge" class="tag amber">Score: 0/0</span>
+      </div>
+      <div class="grid2">
+        <div>
+          <div class="card" id="quiz-card">
+            <div id="quiz-scenario" style="background:var(--bg3);border-radius:8px;padding:12px;margin-bottom:12px;font-size:13px;border-left:3px solid var(--amber)"></div>
+            <h3 style="margin-bottom:10px" id="quiz-question"></h3>
+            <div id="quiz-options"></div>
+            <div id="quiz-feedback" style="margin-top:10px;display:none"></div>
+            <button class="btn primary" id="quiz-next" onclick="nextQuestion()" style="margin-top:12px;display:none">Next Question →</button>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <h3 style="margin-bottom:10px">📊 Quiz Progress</h3>
+            <div class="grid2">
+              <div class="stat"><div class="stat-val" id="q-correct" style="color:var(--green)">0</div><div class="stat-lbl">Correct</div></div>
+              <div class="stat"><div class="stat-val" id="q-wrong" style="color:var(--red)">0</div><div class="stat-lbl">Incorrect</div></div>
+              <div class="stat"><div class="stat-val" id="q-streak" style="color:var(--purple)">0</div><div class="stat-lbl">Streak 🔥</div></div>
+              <div class="stat"><div class="stat-val" id="q-pct" style="color:var(--amber)">--%</div><div class="stat-lbl">Accuracy</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:8px">📖 Scenario Bank</h3>
+            <button class="btn" style="width:100%;margin-bottom:4px" onclick="loadQuiz(0)">🍕 Large meal scenario</button>
+            <button class="btn" style="width:100%;margin-bottom:4px" onclick="loadQuiz(1)">💉 Forgot insulin</button>
+            <button class="btn" style="width:100%;margin-bottom:4px" onclick="loadQuiz(2)">🏃 Exercise session</button>
+            <button class="btn" style="width:100%;margin-bottom:4px" onclick="loadQuiz(3)">😰 Stress response</button>
+            <button class="btn" style="width:100%" onclick="loadQuiz(4)">🌙 Overnight fasting</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+let charts={},bloodMode='healthy',bsAnimId=null;
+
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.getElementById('nb-'+id).classList.add('active');
+  const modes={healthy:'💚 Healthy Mode',t1d:'🔴 T1D Mode',t2d:'🟡 T2D Mode',lab:'🧪 Lab',lifestyle:'🏃 Lifestyle',complications:'⚠️ Complications',organs:'🫁 Organs',bloodstream:'🔬 Bloodstream',management:'💊 Management',quiz:'❓ Quiz'};
+  const colors={healthy:'green',t1d:'red',t2d:'amber',lab:'blue',lifestyle:'purple',complications:'red',organs:'blue',bloodstream:'red',management:'green',quiz:'amber'};
+  document.getElementById('mode-badge').textContent=modes[id]||id;
+  document.getElementById('mode-badge').className='tag '+(colors[id]||'blue');
+  if(id==='bloodstream') initBloodstream();
+  if(id==='organs') renderOrgans();
+  if(id==='complications') updateComplications();
+  if(id==='lifestyle') updateLifestyle();
+  if(id==='management') updateManagement();
+  if(id==='t1d') updateT1D();
+  if(id==='t2d') updateT2D();
+  if(id==='quiz') loadQuiz(0);
+}
+
+function makeChart(id,labels,datasets,type='line',extra={}){
+  if(charts[id]) charts[id].destroy();
+  const ctx=document.getElementById(id);
+  if(!ctx) return;
+  charts[id]=new Chart(ctx,{type,data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:datasets.length>1,labels:{color:'#8fa3c7',font:{size:11}}}},scales:{x:{ticks:{color:'#5a7099',font:{size:10}},grid:{color:'#2a3a5c'}},y:{ticks:{color:'#5a7099',font:{size:10}},grid:{color:'#2a3a5c'},...(extra.yScale||{})}},animation:{duration:400},...(extra.opts||{})}});
+  return charts[id];
+}
+
+function updateHealthy(){
+  const carbs=parseInt(document.getElementById('h-carbs').value);
+  document.getElementById('h-carb-val').textContent=carbs+'g';
+}
+
+function simulateMeal(){
+  const carbs=parseInt(document.getElementById('h-carbs').value);
+  const steps=['🍽️ Food enters mouth, chewing begins...','⬇️ Bolus travels down esophagus...','🪠 Stomach acid begins breaking down carbs...','🔄 Small intestine absorbs glucose molecules...','🩸 Glucose enters bloodstream — blood sugar rising...','🫀 Pancreatic beta cells detect rising glucose...','💊 Beta cells release insulin molecules...','🔑 Insulin travels through bloodstream...','🔓 Insulin binds to cell receptors (muscle, liver, fat)...','📥 GLUT4 transporters activated — glucose enters cells!','⚡ Cells metabolize glucose for energy (ATP)...','📉 Blood sugar normalizes back to 70-100 mg/dL...','✅ Homeostasis restored — process complete!'];
+  const peak=70+carbs*1.2;
+  const glucoseProfile=[];
+  for(let i=0;i<24;i++){
+    if(i<3) glucoseProfile.push(90);
+    else if(i<8) glucoseProfile.push(90+(peak-90)*(i-3)/5);
+    else if(i<20) glucoseProfile.push(peak-(peak-90)*(i-8)/12);
+    else glucoseProfile.push(88+Math.random()*6);
+  }
+  const labels=Array.from({length:24},(_,i)=>i*5+' min');
+  makeChart('h-chart',labels,[{label:'Blood Glucose',data:glucoseProfile.map(v=>Math.round(v)),borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,0.1)',fill:true,tension:.4,pointRadius:0},{label:'Target (100 mg/dL)',data:Array(24).fill(100),borderColor:'#3b82f6',borderDash:[4,4],pointRadius:0,fill:false}],'line',{yScale:{min:60,max:Math.round(peak)+20}});
+  let si=0;
+  const stepDiv=document.getElementById('h-steps');
+  stepDiv.innerHTML='';
+  const interval=setInterval(()=>{
+    if(si>=steps.length){clearInterval(interval);return;}
+    const d=document.createElement('div');
+    d.className='symptom-item';d.innerHTML=steps[si];
+    stepDiv.appendChild(d);stepDiv.scrollTop=stepDiv.scrollHeight;
+    const glucose=glucoseProfile[Math.floor(si*2)]||90;
+    const insulin=si>=5?Math.min(80,(si-5)*10):8;
+    document.getElementById('h-glucose').textContent=Math.round(glucose);
+    document.getElementById('h-glucose').style.color=glucose>140?'#f59e0b':'#22c55e';
+    document.getElementById('h-insulin').textContent=Math.round(insulin);
+    document.getElementById('h-glucagon').textContent=Math.round(80-(si/steps.length)*24);
+    document.getElementById('h-energy').textContent=Math.round(70+(si/steps.length)*30)+'%';
+    si++;
+  },600);
+}
+
+function updateT1D(){
+  const destroyed=parseInt(document.getElementById('t1-progress').value);
+  const remaining=100-destroyed;
+  const insulinProd=Math.max(0,remaining-20)*0.8;
+  const glucose=Math.round(90+destroyed*3.2);
+  document.getElementById('t1-progress-val').textContent=destroyed+'%';
+  document.getElementById('t1-cells-left').textContent=remaining+'%';
+  document.getElementById('t1-insulin-prod').textContent=Math.round(insulinProd)+'%';
+  document.getElementById('t1-cells-bar').style.width=remaining+'%';
+  document.getElementById('t1-cells-bar').style.background=remaining>50?'#22c55e':remaining>20?'#f59e0b':'#ef4444';
+  document.getElementById('t1-insulin-bar').style.width=Math.round(insulinProd)+'%';
+  document.getElementById('t1-glucose').textContent=Math.min(600,glucose);
+  document.getElementById('t1-glucose').style.color=glucose>180?'#ef4444':glucose>140?'#f59e0b':'#22c55e';
+  const symptoms=[];
+  if(glucose>200) symptoms.push({e:'💧',t:'Excessive thirst (polydipsia)',d:'High glucose draws water out of cells'});
+  if(glucose>180) symptoms.push({e:'🚽',t:'Frequent urination (polyuria)',d:'Kidneys excrete excess glucose with water'});
+  if(glucose>160) symptoms.push({e:'😴',t:'Fatigue',d:'Cells cannot access glucose for energy'});
+  if(glucose>250) symptoms.push({e:'⚖️',t:'Weight loss',d:'Body breaks down fat and muscle for energy'});
+  if(glucose>300) symptoms.push({e:'🤢',t:'Nausea / DKA risk',d:'Fat breakdown produces ketone bodies'});
+  if(symptoms.length===0) symptoms.push({e:'✅',t:'No symptoms',d:'Glucose not yet in symptomatic range'});
+  document.getElementById('t1-symptoms').innerHTML=symptoms.map(s=>`<div class="symptom-item"><span style="font-size:18px">${s.e}</span><div><div style="font-weight:500">${s.t}</div><div style="font-size:11px;color:var(--text3)">${s.d}</div></div></div>`).join('');
+  const labels=['Fasting','Breakfast','2h post','Lunch','2h post','Dinner','2h post','Bed'];
+  const healthyG=[88,140,105,135,100,145,108,92];
+  const t1dG=healthyG.map(v=>Math.min(450,Math.round(v+(glucose-90)*0.8)));
+  makeChart('t1-chart',labels,[{label:'T1D (no insulin)',data:t1dG,borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,.1)',fill:true,tension:.4,pointRadius:3},{label:'Target range',data:healthyG,borderColor:'#22c55e',borderDash:[4,4],pointRadius:0,fill:false}],'line',{yScale:{min:60,max:460}});
+}
+
+function injectInsulin(){
+  const el=document.getElementById('t1-glucose');
+  let v=parseInt(el.textContent);
+  const iv=setInterval(()=>{v=Math.max(80,v-15);el.textContent=v;el.style.color=v>180?'#ef4444':v>140?'#f59e0b':'#22c55e';if(v<=80)clearInterval(iv);},200);
+}
+
+function updateT2D(){
+  const resist=parseInt(document.getElementById('t2-resist').value);
+  const years=parseInt(document.getElementById('t2-years').value);
+  const pancreasHealth=Math.max(10,100-years*2.5);
+  const insulinLvl=Math.round((100+resist*0.8)*(pancreasHealth/100));
+  const glucose=Math.round(90+resist*1.4+years*2);
+  const cellUptake=Math.round(100-resist*0.65);
+  document.getElementById('t2-resist-val').textContent=resist+'%';
+  document.getElementById('t2-years-val').textContent=years;
+  document.getElementById('t2-glucose').textContent=Math.min(400,glucose);
+  document.getElementById('t2-glucose').style.color=glucose>180?'#ef4444':glucose>140?'#f59e0b':'#22c55e';
+  document.getElementById('t2-insulin-lvl').textContent=insulinLvl;
+  document.getElementById('t2-pancreas').textContent=Math.round(pancreasHealth)+'%';
+  document.getElementById('t2-cells').textContent=Math.max(5,cellUptake)+'%';
+  const stage=glucose<100?0:glucose<126?1:glucose<200?2:3;
+  ['t2-s1','t2-s2','t2-s3','t2-s4'].forEach((s,i)=>document.getElementById(s).classList.toggle('active',i===stage));
+  const labels=Array.from({length:10},(_,i)=>i*3+' yr');
+  const t2dG=labels.map((_,i)=>Math.min(350,90+i*resist*0.3+(i*i)*0.5));
+  makeChart('t2-chart',labels,[{label:'T2D progression',data:t2dG.map(v=>Math.round(v)),borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,.1)',fill:true,tension:.4,pointRadius:0},{label:'Normal',data:Array(10).fill(90),borderColor:'#22c55e',borderDash:[4,4],pointRadius:0,fill:false}],'line',{yScale:{min:60,max:380}});
+}
+
+function updateLab(){
+  const exLabels=['Low','Moderate','High','Intense'];
+  document.getElementById('lab-dose-val').textContent=document.getElementById('lab-dose').value;
+  document.getElementById('lab-meal-val').textContent=document.getElementById('lab-meal').value+'g';
+  document.getElementById('lab-ex-val').textContent=exLabels[document.getElementById('lab-ex').value];
+}
+
+function runLabSim(){
+  const dose=parseInt(document.getElementById('lab-dose').value);
+  const meal=parseInt(document.getElementById('lab-meal').value);
+  const ex=parseInt(document.getElementById('lab-ex').value);
+  const type=document.getElementById('lab-type').value;
+  const exEffect=ex*15;
+  const insulinEffect=type==='healthy'?dose*5:type==='t1'?dose*4:dose*2;
+  const peakBase=90+meal*1.4;
+  const peak=Math.max(70,peakBase-insulinEffect-exEffect);
+  const nadir=Math.max(55,90-insulinEffect*0.3-exEffect*0.5);
+  const labels=Array.from({length:20},(_,i)=>i*15+'m');
+  const data=labels.map((_,i)=>{const t=i/19;return t<0.3?Math.round(90+(peak-90)*(t/0.3)):Math.round(peak-(peak-nadir)*((t-0.3)/0.7));});
+  const tir=data.filter(v=>v>=70&&v<=180).length;
+  const pct=Math.round(tir/data.length*100);
+  const warn=document.getElementById('lab-warning');
+  warn.style.display='block';
+  if(nadir<70) warn.innerHTML='<span class="tag red">⚠️ Hypoglycemia risk! Glucose dropped to '+Math.round(nadir)+' mg/dL</span>';
+  else if(peak>250) warn.innerHTML='<span class="tag amber">⚠️ Hyperglycemia: Peak '+Math.round(peak)+' mg/dL</span>';
+  else warn.innerHTML='<span class="tag green">✓ Glucose well controlled</span>';
+  document.getElementById('lab-peak').textContent=Math.round(peak);
+  document.getElementById('lab-low').textContent=Math.round(nadir);
+  document.getElementById('lab-time').textContent=pct+'%';
+  const risk=pct>80?'Low':pct>60?'Medium':'High';
+  document.getElementById('lab-risk').textContent=risk;
+  document.getElementById('lab-risk').style.color=risk==='Low'?'#22c55e':risk==='Medium'?'#f59e0b':'#ef4444';
+  makeChart('lab-chart',labels,[{label:'Glucose',data,borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.1)',fill:true,tension:.4,pointRadius:0},{label:'Hypo (<70)',data:Array(20).fill(70),borderColor:'#ef4444',borderDash:[4,4],pointRadius:0,fill:false},{label:'Hyper (>180)',data:Array(20).fill(180),borderColor:'#f59e0b',borderDash:[4,4],pointRadius:0,fill:false}],'line',{yScale:{min:40,max:Math.max(300,peak+30)}});
+}
+
+function resetLab(){
+  document.getElementById('lab-dose').value=10;document.getElementById('lab-meal').value=60;document.getElementById('lab-ex').value=0;updateLab();
+  if(charts['lab-chart']){charts['lab-chart'].destroy();delete charts['lab-chart'];}
+  ['lab-peak','lab-low','lab-time','lab-risk'].forEach(id=>{document.getElementById(id).textContent='--';});
+  document.getElementById('lab-warning').style.display='none';
+}
+
+function updateLifestyle(){
+  const ex=parseInt(document.getElementById('lf-ex').value);
+  const sleep=parseInt(document.getElementById('lf-sleep').value);
+  const stress=parseInt(document.getElementById('lf-stress').value);
+  const diet=parseInt(document.getElementById('lf-diet').value);
+  const bmi=parseInt(document.getElementById('lf-bmi').value);
+  document.getElementById('lf-sleep-val').textContent=['Poor','Moderate','Good','Excellent'][sleep];
+  document.getElementById('lf-stress-val').textContent=['Minimal','Low','Moderate','High'][stress];
+  document.getElementById('lf-diet-val').textContent=['Poor','Average','Good','Excellent'][diet];
+  document.getElementById('lf-bmi-val').textContent=['Underweight','Normal','Overweight','Obese'][bmi];
+  const sensitivity=Math.round(Math.min(100,20+ex*8+sleep*7+(3-stress)*6+diet*8+(3-bmi)*9));
+  const pancreasH=Math.round(Math.min(100,40+ex*5+sleep*5+(3-stress)*5+diet*10-bmi*8));
+  const risk=Math.round(Math.max(0,80-ex*6-sleep*4+stress*8-diet*8+bmi*12));
+  const hba1c=(4.5+(100-sensitivity)*0.04+risk*0.02).toFixed(1);
+  document.getElementById('lf-sensitivity').textContent=sensitivity+'%';
+  document.getElementById('lf-sensitivity').style.color=sensitivity>70?'#22c55e':sensitivity>50?'#f59e0b':'#ef4444';
+  document.getElementById('lf-pancreas').textContent=pancreasH+'%';
+  document.getElementById('lf-risk').textContent=risk+'%';
+  document.getElementById('lf-risk').style.color=risk<20?'#22c55e':risk<50?'#f59e0b':'#ef4444';
+  document.getElementById('lf-hba1c').textContent=hba1c+'%';
+  document.getElementById('lf-hba1c').style.color=parseFloat(hba1c)<5.7?'#22c55e':parseFloat(hba1c)<6.5?'#f59e0b':'#ef4444';
+  if(charts['lf-radar']) charts['lf-radar'].destroy();
+  const ctx=document.getElementById('lf-radar');
+  if(ctx) charts['lf-radar']=new Chart(ctx,{type:'radar',data:{labels:['Exercise','Sleep','Low Stress','Diet Quality','Healthy Weight'],datasets:[{label:'Your Profile',data:[ex/7*100,sleep/3*100,(3-stress)/3*100,diet/3*100,(3-bmi)/3*100],borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,0.2)',pointBackgroundColor:'#3b82f6'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:0,max:100,ticks:{color:'#5a7099',font:{size:10},stepSize:25},grid:{color:'#2a3a5c'},pointLabels:{color:'#8fa3c7',font:{size:11}}}}}});
+  const insights=[];
+  if(ex<3) insights.push('⬆️ Increasing exercise to 3-5 days/week can reduce T2D risk by 58%.');
+  if(sleep<2) insights.push('💤 Poor sleep significantly increases insulin resistance.');
+  if(stress>1) insights.push('😰 Cortisol from stress raises blood glucose directly.');
+  if(diet<2) insights.push('🥗 A whole-food diet low in refined carbs dramatically improves HbA1c.');
+  if(bmi>1) insights.push('⚖️ Losing 5-10% body weight can reverse prediabetes.');
+  if(insights.length===0) insights.push('🌟 Excellent lifestyle choices! Keep it up!');
+  document.getElementById('lf-insights').innerHTML=insights.map(i=>`<p style="margin-bottom:6px">${i}</p>`).join('');
+}
+
+const compData=[
+  {name:'Eyes (Retinopathy)',icon:'👁️',desc:'Damage to retinal blood vessels; may cause blindness',t:20},
+  {name:'Kidneys (Nephropathy)',icon:'🫘',desc:'Progressive kidney damage; may require dialysis',t:25},
+  {name:'Nerves (Neuropathy)',icon:'⚡',desc:'Tingling, pain, numbness in extremities',t:18},
+  {name:'Heart Disease',icon:'❤️',desc:'2-4x increased cardiovascular risk',t:22},
+  {name:'Brain (Stroke risk)',icon:'🧠',desc:'Increased stroke and cognitive decline risk',t:25},
+  {name:'Feet & Circulation',icon:'🦶',desc:'Poor circulation, ulcers, amputation risk',t:20},
+];
+
+function updateComplications(){
+  const years=parseInt(document.getElementById('comp-years').value);
+  document.getElementById('comp-years-val').textContent=years;
+  const stage=years<5?0:years<10?1:years<20?2:3;
+  ['c-s1','c-s2','c-s3','c-s4'].forEach((s,i)=>document.getElementById(s).classList.toggle('active',i===stage));
+  document.getElementById('comp-organs').innerHTML=compData.map(c=>{
+    const pct=Math.min(100,Math.round(years/c.t*100));
+    const color=pct<25?'#22c55e':pct<50?'#f59e0b':pct<75?'#f97316':'#ef4444';
+    return `<div class="card"><div style="font-size:24px;margin-bottom:6px">${c.icon}</div><div style="font-size:13px;font-weight:500;margin-bottom:4px">${c.name}</div><div style="font-size:11px;color:var(--text3);margin-bottom:8px">${c.desc}</div><div style="display:flex;justify-content:space-between;font-size:11px"><span>Damage</span><span style="color:${color}">${pct}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color}"></div></div></div>`;
+  }).join('');
+}
+
+const organs=[
+  {name:'Pancreas',icon:'🔵',normal:'Produces insulin (beta cells) and glucagon (alpha cells) to regulate blood glucose.',diabetes:'In T1D, beta cells are destroyed by the immune system. In T2D, beta cells become exhausted from overproduction.',chronic:'Chronic high glucose causes beta cell burnout and complete insulin deficiency.'},
+  {name:'Liver',icon:'🟤',normal:'Stores glucose as glycogen and releases it when needed. Also performs gluconeogenesis.',diabetes:'In T2D, the liver continues releasing glucose even when blood sugar is already high (hepatic insulin resistance).',chronic:'Fatty liver (NAFLD) is common in T2D due to excess glucose being converted to fat.'},
+  {name:'Kidneys',icon:'🔵',normal:'Filter blood and maintain fluid balance. Reabsorb all glucose below 180 mg/dL threshold.',diabetes:'When glucose exceeds ~180 mg/dL, kidneys excrete glucose in urine (glycosuria), causing increased urination.',chronic:'Nephropathy damages glomeruli. Can lead to kidney failure requiring dialysis.'},
+  {name:'Heart',icon:'❤️',normal:'Pumps oxygenated blood throughout the body. Uses glucose and fatty acids for energy.',diabetes:'High glucose damages blood vessel walls, promotes atherosclerosis, and increases clotting risk.',chronic:'2-4x increased risk of heart attack and heart failure. Leading cause of death in diabetics.'},
+  {name:'Brain',icon:'🧠',normal:'Uses glucose exclusively for energy (20% of total body glucose). Cannot store glycogen.',diabetes:'Both hypoglycemia and chronic hyperglycemia impair cognitive function.',chronic:'Increased risk of stroke, dementia, and cognitive decline with long-term poorly controlled diabetes.'},
+  {name:'Muscles',icon:'💪',normal:'Major glucose consumer. GLUT4 transporters activated by insulin bring glucose in for energy and glycogen storage.',diabetes:'In T2D, muscle cells develop insulin resistance — GLUT4 transporters fail to respond to insulin.',chronic:'Muscle wasting (sarcopenia) accelerates. Exercise helps restore insulin sensitivity.'},
+  {name:'Fat Tissue',icon:'🟡',normal:'Stores energy as triglycerides. With insulin, fat cells take up glucose and store fat.',diabetes:'Without insulin or with resistance, fat cells release fatty acids, contributing to high blood lipids.',chronic:'Visceral fat releases inflammatory cytokines that worsen insulin resistance.'},
+  {name:'Eyes',icon:'👁️',normal:'Retinal blood vessels supply oxygen and nutrients to the retina.',diabetes:'High glucose causes blood vessels to leak, swell, and grow abnormally.',chronic:'Diabetic retinopathy is the leading cause of blindness in working-age adults.'},
+  {name:'Blood Vessels',icon:'🔴',normal:'Transport oxygen, nutrients, and hormones. Endothelium regulates vascular tone.',diabetes:'Glucose directly damages endothelial cells. AGEs stiffen vessel walls.',chronic:'Macrovascular and microvascular complications develop progressively.'},
+];
+
+function renderOrgans(){
+  document.getElementById('organ-grid').innerHTML=organs.map((o,i)=>`<div class="organ-card" id="org-${i}" onclick="selectOrgan(${i})"><div class="organ-icon">${o.icon}</div><div class="organ-name">${o.name}</div></div>`).join('');
+}
+
+function selectOrgan(i){
+  document.querySelectorAll('.organ-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('org-'+i).classList.add('selected');
+  const o=organs[i];
+  document.getElementById('organ-detail').innerHTML=`<h3>${o.icon} ${o.name}</h3><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px"><div style="background:var(--greenb);border:1px solid var(--green2);border-radius:8px;padding:10px"><div style="font-size:11px;color:var(--green);margin-bottom:6px">💚 NORMAL FUNCTION</div><div style="font-size:12px;color:#86efac">${o.normal}</div></div><div style="background:var(--amberb);border:1px solid var(--amber);border-radius:8px;padding:10px"><div style="font-size:11px;color:var(--amber);margin-bottom:6px">🟡 IN DIABETES</div><div style="font-size:12px;color:#fcd34d">${o.diabetes}</div></div><div style="background:var(--redb);border:1px solid var(--red);border-radius:8px;padding:10px"><div style="font-size:11px;color:var(--red);margin-bottom:6px">🔴 CHRONIC EFFECTS</div><div style="font-size:12px;color:#fca5a5">${o.chronic}</div></div></div>`;
+}
+
+let bsParticles=[];
+function setBloodMode(m){
+  bloodMode=m;
+  ['healthy','t1','t2'].forEach(k=>{const el=document.getElementById('bs-'+k+'-btn');if(el){el.classList.remove('primary');}});
+  const btn=document.getElementById('bs-'+m+'-btn');if(btn) btn.classList.add('primary');
+  initBloodParticles();
+}
+
+function initBloodstream(){ setBloodMode('healthy'); }
+
+function initBloodParticles(){
+  const canvas=document.getElementById('bs-canvas');
+  if(!canvas) return;
+  if(bsAnimId) cancelAnimationFrame(bsAnimId);
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  const cfgs={healthy:{glucose:12,insulin:15,rbc:20,wbc:3,desc:'In a healthy bloodstream, glucose (amber) and insulin (blue) are balanced. Insulin binds to cell receptors, allowing glucose to enter cells efficiently.'},t1:{glucose:35,insulin:1,rbc:18,wbc:8,desc:'In Type 1 Diabetes, almost no insulin (blue) is present. Glucose (amber) accumulates dangerously. White blood cells (purple) are elevated from immune activity.'},t2:{glucose:25,insulin:30,rbc:19,wbc:5,desc:'In Type 2 Diabetes, insulin (blue) is high as the pancreas overcompensates, but glucose (amber) remains elevated because cells are resistant to insulin\'s signal.'}};
+  const cfg=cfgs[bloodMode];
+  document.getElementById('bs-description').textContent=cfg.desc;
+  document.getElementById('bs-stats').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="stat"><div class="stat-val" style="font-size:16px;color:var(--amber)">${cfg.glucose*8} mg/dL</div><div class="stat-lbl">Glucose</div></div><div class="stat"><div class="stat-val" style="font-size:16px;color:var(--blue)">${bloodMode==='t1'?'< 2':bloodMode==='t2'?'High':'Normal'}</div><div class="stat-lbl">Insulin</div></div><div class="stat"><div class="stat-val" style="font-size:16px;color:var(--red)">${cfg.rbc} M/µL</div><div class="stat-lbl">Red Blood Cells</div></div><div class="stat"><div class="stat-val" style="font-size:16px;color:var(--purple)">${cfg.wbc}k/µL</div><div class="stat-lbl">White Blood Cells</div></div></div>`;
+  bsParticles=[];
+  for(let i=0;i<cfg.rbc;i++) bsParticles.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*1.5,vy:(Math.random()-.5)*1.5,r:8,type:'rbc',color:'#dc2626'});
+  for(let i=0;i<cfg.glucose;i++) bsParticles.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*2,r:4,type:'glucose',color:'#f59e0b'});
+  for(let i=0;i<cfg.insulin;i++) bsParticles.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*1.8,vy:(Math.random()-.5)*1.8,r:3,type:'insulin',color:'#3b82f6'});
+  for(let i=0;i<cfg.wbc;i++) bsParticles.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*0.8,vy:(Math.random()-.5)*0.8,r:12,type:'wbc',color:'#6366f1'});
+  function draw(){
+    ctx.clearRect(0,0,W,H);ctx.fillStyle='#060a14';ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle='rgba(59,130,246,0.15)';ctx.lineWidth=2;ctx.strokeRect(5,5,W-10,H-10);
+    bsParticles.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<p.r||p.x>W-p.r) p.vx*=-1;
+      if(p.y<p.r||p.y>H-p.r) p.vy*=-1;
+      ctx.beginPath();
+      if(p.type==='rbc') ctx.ellipse(p.x,p.y,p.r*1.6,p.r,0,0,Math.PI*2);
+      else ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.color+(p.type==='wbc'?'99':'dd');ctx.fill();
+      if(p.type==='wbc'){ctx.strokeStyle=p.color;ctx.lineWidth=1;ctx.stroke();}
+    });
+    bsAnimId=requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function updateManagement(){
+  const insulin=parseInt(document.getElementById('mgmt-insulin').value);
+  const carbs=parseInt(document.getElementById('mgmt-carbs').value);
+  const ex=parseInt(document.getElementById('mgmt-ex').value);
+  const meds=parseInt(document.getElementById('mgmt-meds').value);
+  document.getElementById('mgmt-insulin-val').textContent=insulin;
+  document.getElementById('mgmt-carbs-val').textContent=carbs+'g';
+  document.getElementById('mgmt-ex-val').textContent=ex;
+  document.getElementById('mgmt-meds-val').textContent=meds+'%';
+  const avgGlucose=Math.round(Math.max(70,250-insulin*3.5-ex*0.8-(meds/100)*40+carbs*0.5));
+  const hba1c=((avgGlucose+46.7)/28.7).toFixed(1);
+  const tir=Math.round(Math.min(95,Math.max(10,100-Math.abs(avgGlucose-130)*0.5)));
+  const risk=hba1c<7?'Low':hba1c<8?'Medium':'High';
+  document.getElementById('mgmt-hba1c').textContent=hba1c+'%';
+  document.getElementById('mgmt-hba1c').style.color=parseFloat(hba1c)<7?'#22c55e':parseFloat(hba1c)<8?'#f59e0b':'#ef4444';
+  document.getElementById('mgmt-avg-g').textContent=avgGlucose;
+  document.getElementById('mgmt-tir').textContent=tir+'%';
+  document.getElementById('mgmt-risk').textContent=risk;
+  document.getElementById('mgmt-risk').style.color=risk==='Low'?'#22c55e':risk==='Medium'?'#f59e0b':'#ef4444';
+  const organHealth=['Eyes','Kidneys','Nerves','Heart','Feet'];
+  document.getElementById('mgmt-organs').innerHTML=organHealth.map(o=>{
+    const s=Math.round(Math.min(100,20+tir*0.6+(7-parseFloat(hba1c))*10));
+    const col=s>70?'#22c55e':s>50?'#f59e0b':'#ef4444';
+    return `<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:12px"><span>${o}</span><span style="color:${col}">${s}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${s}%;background:${col}"></div></div></div>`;
+  }).join('');
+  const months=['Jan','Feb','Mar','Apr','May','Jun'];
+  const projected=months.map((_,i)=>Math.max(parseFloat(hba1c)-i*(8-parseFloat(hba1c))*0.1,5.5));
+  makeChart('mgmt-chart',months,[{label:'HbA1c (%)',data:projected.map(v=>parseFloat(v.toFixed(1))),borderColor:'#a855f7',backgroundColor:'rgba(168,85,247,0.1)',fill:true,tension:.4,pointRadius:4}],'line',{yScale:{min:4,max:11}});
+}
+
+const quizScenarios=[
+  {scenario:'🍕 A patient with Type 1 Diabetes eats a large pizza (120g carbohydrates) but forgets to take their insulin injection.',question:'What will happen to their blood glucose level?',options:['Blood glucose will rise dramatically and stay elevated (hyperglycemia)','Blood glucose will rise briefly then return to normal on its own','Blood glucose will drop (hypoglycemia)','Blood glucose will not change'],correct:0,explanation:'Without insulin to help glucose enter cells, blood glucose will continue rising and stay dangerously elevated. This is a medical emergency — the patient needs insulin immediately.'},
+  {scenario:'💉 A Type 2 diabetes patient takes metformin daily, eats 45g carbs/meal, and walks 30 minutes each day.',question:'What is the most likely outcome for their HbA1c over 3 months?',options:['HbA1c will worsen (increase)','HbA1c will likely improve (decrease)','HbA1c will not change','HbA1c will fluctuate randomly'],correct:1,explanation:'This combination of medication, dietary control, and exercise is evidence-based management. Metformin reduces hepatic glucose output, low-carb diet prevents spikes, and exercise increases insulin sensitivity.'},
+  {scenario:'🏃 A healthy athlete goes for an intense 1-hour run. Her blood glucose was 100 mg/dL before starting.',question:'What happens to insulin and glucagon levels during exercise?',options:['Both insulin and glucagon increase','Insulin decreases, glucagon increases to release stored glucose','Insulin increases, glucagon decreases','Both insulin and glucagon decrease'],correct:1,explanation:'During exercise, insulin decreases to allow free glucose access, while glucagon increases to stimulate the liver to release stored glucose (glycogenolysis). Exercise also allows glucose uptake via insulin-independent mechanisms (GLUT4 translocation).'},
+  {scenario:'😰 A student has a major exam and feels extremely stressed. She has no diabetes.',question:'What is the effect of stress hormones (cortisol, adrenaline) on blood glucose?',options:['Stress lowers blood glucose by increasing insulin','Stress raises blood glucose by promoting glucose release from the liver','Stress has no effect on blood glucose','Stress reduces appetite, lowering blood glucose'],correct:1,explanation:'Cortisol and adrenaline are counter-regulatory hormones that prepare the body for "fight or flight." They stimulate gluconeogenesis and glycogenolysis in the liver, raising blood glucose. In diabetic patients, stress can cause significant glucose spikes.'},
+  {scenario:'🌙 A person with Type 1 Diabetes goes to sleep with glucose at 85 mg/dL. Their basal insulin is correctly set.',question:'What is the "dawn phenomenon" they might experience?',options:['Glucose dropping to dangerously low levels overnight','Blood glucose rising in the early morning (3-8 AM) due to hormonal surges','Blood glucose staying perfectly stable all night','Insulin becoming ineffective overnight'],correct:1,explanation:'The dawn phenomenon is a natural early-morning rise in blood glucose (3–8 AM) driven by growth hormone, cortisol, and glucagon surges during sleep. These hormones stimulate the liver to release glucose, requiring basal insulin adjustments.'},
+];
+
+let curQuiz=0,qCorrect=0,qWrong=0,qStreak=0,qAnswered=false;
+
+function loadQuiz(idx){
+  curQuiz=idx%quizScenarios.length;qAnswered=false;
+  const q=quizScenarios[curQuiz];
+  document.getElementById('quiz-scenario').textContent=q.scenario;
+  document.getElementById('quiz-question').textContent=q.question;
+  document.getElementById('quiz-feedback').style.display='none';
+  document.getElementById('quiz-next').style.display='none';
+  document.getElementById('quiz-options').innerHTML=q.options.map((o,i)=>`<div class="quiz-opt" id="qopt-${i}" onclick="answerQuiz(${i})">${String.fromCharCode(65+i)}. ${o}</div>`).join('');
+}
+
+function answerQuiz(chosen){
+  if(qAnswered) return;
+  qAnswered=true;
+  const q=quizScenarios[curQuiz];
+  const isCorrect=chosen===q.correct;
+  if(isCorrect){qCorrect++;qStreak++;}else{qWrong++;qStreak=0;}
+  document.querySelectorAll('.quiz-opt').forEach((el,i)=>{
+    if(i===q.correct) el.classList.add('correct');
+    else if(i===chosen&&!isCorrect) el.classList.add('wrong');
+    el.onclick=null;
+  });
+  const fb=document.getElementById('quiz-feedback');
+  fb.style.display='block';
+  fb.innerHTML=`<div style="background:${isCorrect?'var(--greenb)':'var(--redb)'};border:1px solid ${isCorrect?'var(--green)':'var(--red)'};border-radius:8px;padding:10px;font-size:13px"><div style="font-weight:600;color:${isCorrect?'var(--green)':'var(--red)'};margin-bottom:4px">${isCorrect?'✓ Correct!':'✗ Incorrect'}</div><div style="color:var(--text2)">${q.explanation}</div></div>`;
+  document.getElementById('quiz-next').style.display='inline-flex';
+  const total=qCorrect+qWrong;
+  document.getElementById('q-correct').textContent=qCorrect;
+  document.getElementById('q-wrong').textContent=qWrong;
+  document.getElementById('q-streak').textContent=qStreak;
+  document.getElementById('q-pct').textContent=total?Math.round(qCorrect/total*100)+'%':'--%';
+  document.getElementById('quiz-score-badge').textContent='Score: '+qCorrect+'/'+total;
+}
+
+function nextQuestion(){ loadQuiz((curQuiz+1)%quizScenarios.length); }
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const labels=Array.from({length:12},(_,i)=>i*15+'m');
+  makeChart('h-chart',labels,[{label:'Blood Glucose',data:[88,88,90,95,102,120,138,125,110,98,90,88],borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,0.1)',fill:true,tension:.4,pointRadius:0}],'line',{yScale:{min:60,max:160}});
+  document.getElementById('h-steps').innerHTML='<div class="symptom-item">💡 Click "Eat & Simulate" to watch the glucose-insulin cycle in action</div>';
+  updateT1D();updateT2D();updateLifestyle();updateManagement();updateComplications();renderOrgans();loadQuiz(0);
+});
+</script>
+</body>
+</html>

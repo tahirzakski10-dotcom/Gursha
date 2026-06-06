@@ -1,0 +1,58 @@
+{
+  "nav": {
+    "dashboard": "Daashboordii",
+    "scanMeal": "Nyaata Qoradhu",
+    "history": "Seenaa",
+    "reports": "Gabaasa",
+    "aiCoach": "Gorsaa AI",
+    "performance": "Raawwii+",
+    "diseases": "Dhukkuboota",
+    "futureGoals": "Galmoota Fuulduraa",
+    "profile": "Piroofaayilii"
+  },
+  "dashboard": {
+    "goodMorning": "Akkam bultan!",
+    "wellnessBalance": "Madaallii fayyummaa EthioPlate guyyaa har'aa as jira.",
+    "exploreInsights": "Hubannoo {{tab}} keessanii daawwadhaa.",
+    "logMeal": "Nyaata Galmeessi",
+    "mealsToday": "Nyaata Har'aa",
+    "calories": "Kaaloorii",
+    "protein": "Pirootiinii",
+    "fiber": "Faayiberii",
+    "latestAnalysis": "Xiinxala Nyaataa Dhiyeenyaa",
+    "noMeals": "Har'a nyaanni hin galmoofne",
+    "uploadPhoto": "Hubannoo sirna nyaataa Itoophiyaa dhuunfaan argachuuf suuraa nyaata keetii olkaa'i.",
+    "profileContext": "Haala Piroofaayilii Keetii",
+    "healthGoals": "Galmoota Fayyaa",
+    "trackedConditions": "Haalawwan Hordofaman",
+    "activityLevel": "Sadarkaa Sochii",
+    "noneSet": "Hin qindaa'ellee",
+    "notSet": "Hin qindaa'ellee",
+    "insight": "Hubannoo {{number}}"
+  },
+  "recommendations": {
+    "lowProtein": "Nyaanni kun pirootiinii xiqqaadha. Fedhii pirootiinii kee guutuuf hanqaaquu affeerame, misira, ykn kitfoo dabaluu yaadi.",
+    "goodProtein": "Fudhannaan pirootiinii baay'ee gaariidha! Nyaanni kun galma pirootiinii guyyaa guyyaa kee gaariin uwwisa.",
+    "lowIron": "Fudhannaan sibiilaa kee nyaata kanaan xiqqaadha. Fudhatamummaa fooyya'aaf raafuu magariisa akka Goomeniitti dabali ykn Viitaaminii C wajjin walitti maki.",
+    "lowFiber": "Nyaanni kun faayiberii dabalataa barbaada. Nyaata daakuu fooyyessuuf kuduraalee, misira dabali ykn buddeena midhaan guutuu filadhu.",
+    "lowVitA": "Nyaata Viitaaminii A qaban kan akka kaarootii, diinichaa mi'aawaa, ykn raafuu magariisa dabaluu yaadi.",
+    "lowVitC": "Salaaxaa timaatimaa ykn cuunfaa loomiitti dabaluun Viitaaminii C kee kan dabalu yoo ta'u, sibiila fudhachuu fooyyessa.",
+    "highFat": "Nyaanni kun cooma baay'ee qaba. Ulfaatina to'achuuf yoo ta'e, mala ittoo salphaa ykn dadhaa qulqullaa'aa xiqqoo ta'e yaadi.",
+    "highCarbLowProtein": "Kun nyaata kaarboohayidireetii baay'ee fi pirootiinii xiqqoo qabudha. Sukkaara dhiigaa madaaluuf hanqaaquu, foon, ykn baaqilaa dabali.",
+    "diabetesWarning": "⚕️ Dhukkuba sukkaaraatiin nyaata kaarboohayidireetiin itti baay'atu to'adhu. Kaarboohayidireetii pirootiinii fi faayiberii wajjin waliitti qindeessuun gadi lakkifamuu giluukoosii suuta jedhi.",
+    "anemiaWarning": "⚕️ Hanqina dhiigaa to'achuuf nyaata akka kitfoo, foon diimaa ykn buddeena xaafii viitaaminii C waliin jiran dursa kenni.",
+    "hypertensionWarning": "⚕️ Dhiibbaa dhiigaatiin qophii cooma olaanaa xiqqeessi. Waaddii cooma qabu irra waaddii akka tibsiitti filadhu, akkasumas dadhaa dabalamu daangessi.",
+    "cholesterolWarning": "⚕️ Kolestroolii to'achuuf nyaata biqiltuu irratti hundaa'e akka shiroo, misira, fi baayyaaynatuu filadhu.",
+    "weightLossGoal": "🎯 Ulfaatina hir'isuuf nyaanni kun kaaloorii baay'ee qaba. Kuduraalee baay'ee ykn guddina xinnoo fayyadamuu yaadi.",
+    "muscleGoal": "🎯 Maashaa ijaaruuf pirootiinii olaanaaf carraaqi. Lukkuu waaddii, hanqaaquu, ykn misira dabalataa dabali.",
+    "energyGoal": "🎯 Humna itti fufiinsa qabuuf kaarboohayidireetii akka buddeena xaafii ykn garbuu (Tiihiloo) dabaladhu.",
+    "wellBalanced": "Kun nyaata madaalawaadha! Garaagarummaa nyaataa eeguun hojii gaarii hojjetteetta."
+  },
+  "common": {
+    "language": "Afaan",
+    "cancel": "Haqi",
+    "save": "Kusaa",
+    "next": "Itti Aanu",
+    "back": "Duuba"
+  }
+}
