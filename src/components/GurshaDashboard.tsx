@@ -281,9 +281,7 @@ function ScanMealView({ onComplete }: { onComplete: () => void }) {
     formData.append("file", file);
 
     try {
-      const rawApiUrl = process.env.NEXT_PUBLIC_API_URL;
-      const API_URL = rawApiUrl?.replace(/\/+$/, "") ?? "";
-      const endpoint = "https://tahirski-gursha-backend.hf.space/predict";
+           const endpoint = "https://tahirski-gursha-backend.hf.space/predict";
       if (!rawApiUrl && typeof window !== "undefined" && window.location.hostname !== "localhost") {
         console.warn(
           "NEXT_PUBLIC_API_URL is not set. Falling back to relative '/predict'.",
