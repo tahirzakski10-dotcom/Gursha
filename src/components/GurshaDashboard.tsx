@@ -281,7 +281,8 @@ function ScanMealView({ onComplete }: { onComplete: () => void }) {
     formData.append("file", file);
 
     try {
-      const response = await fetch("http://localhost:8000/predict", {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const response = await fetch(`${API_URL}/predict`, {
         method: "POST",
         body: formData,
       });
@@ -303,7 +304,7 @@ function ScanMealView({ onComplete }: { onComplete: () => void }) {
       setStep(3);
     } catch (err) {
       console.error(err);
-      alert("Error reaching AI model. Make sure backend is running on port 8000.");
+      alert("AI model temporarily unavailable. Please try again later.");
     } finally {
       setIsScanning(false);
     }

@@ -114,6 +114,30 @@ async def scan_meal(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/predict")
+async def predict_meal(file: UploadFile = File(...)):
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File provided is not an image.")
+
+    try:
+        image_bytes = await file.read()
+        image = Image.open(BytesIO(image_bytes))
+        
+        # Run inference
+        predictions = predict_food.predict(image)
+        
+        # Get the top prediction
+        top_food = predictions[0]['food']
+        confidence = predictions[0]['confidence']
+        
+        return {
+            "predicted_food": top_food,
+            "confidence": confidence
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

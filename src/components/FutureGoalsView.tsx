@@ -199,11 +199,11 @@ export default function FutureGoalsView() {
         
         <div className="relative w-full max-w-4xl mx-auto py-12">
           {/* Abstract SVG Connectors */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" preserveAspectRatio="none">
-             <path d="M50% 50% L20% 25%" stroke="white" strokeWidth="2" strokeDasharray="5,5" />
-             <path d="M50% 50% L80% 25%" stroke="white" strokeWidth="2" strokeDasharray="5,5" />
-             <path d="M50% 50% L20% 75%" stroke="white" strokeWidth="2" strokeDasharray="5,5" />
-             <path d="M50% 50% L80% 75%" stroke="white" strokeWidth="2" strokeDasharray="5,5" />
+          <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" preserveAspectRatio="none" viewBox="0 0 100 100">
+             <path d="M50 50 L20 25" stroke="white" strokeWidth="0.5" strokeDasharray="2,2" />
+             <path d="M50 50 L80 25" stroke="white" strokeWidth="0.5" strokeDasharray="2,2" />
+             <path d="M50 50 L20 75" stroke="white" strokeWidth="0.5" strokeDasharray="2,2" />
+             <path d="M50 50 L80 75" stroke="white" strokeWidth="0.5" strokeDasharray="2,2" />
           </svg>
 
           {/* Center Node */}
