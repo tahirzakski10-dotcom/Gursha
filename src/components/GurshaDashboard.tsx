@@ -282,14 +282,8 @@ function ScanMealView({ onComplete }: { onComplete: () => void }) {
 
     try {
            const endpoint = "https://tahirski-gursha-backend.hf.space/predict";
-      if (!rawApiUrl && typeof window !== "undefined" && window.location.hostname !== "localhost") {
-        console.warn(
-          "NEXT_PUBLIC_API_URL is not set. Falling back to relative '/predict'.",
-          "For deployed frontend, set NEXT_PUBLIC_API_URL to your backend host."
-        );
-      }
-
-      const response = await fetch(endpoint, {
+     
+    const response = await fetch(endpoint, {
         method: "POST",
         body: formData,
       });
